@@ -34,7 +34,14 @@ buildGoModule rec {
   # subprocess and waits for it to write debug.log. The TUI bails in the
   # sandbox (no tmux/terminal), so debug.log never appears. The test guards
   # the subprocess arm with testing.Short(), so honour that.
-  checkFlags = [ "-short" ];
+  # TestValidatePluginFlags_EmptyCatalogActionableError leaks plugin catalog
+  # state from the earlier TelegramForkAccepted test (a package-level cache is
+  # not reset between tests), so the "empty catalog" assertion sees tg-fork.
+  # Upstream test isolation bug; skip it.
+  checkFlags = [
+    "-short"
+    "-skip=TestValidatePluginFlags_EmptyCatalogActionableError"
+  ];
 
   preCheck = ''
     export HOME=$(mktemp -d)
