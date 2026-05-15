@@ -191,6 +191,16 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
+<summary><strong>grok</strong> - Grok Build, xAI's agentic coding tool</summary>
+
+- **Source**: binary
+- **License**: unfree
+- **Homepage**: https://x.ai
+- **Usage**: `nix run github:numtide/llm-agents.nix#grok -- --help`
+- **Nix**: [packages/grok/package.nix](packages/grok/package.nix)
+
+</details>
+<details>
 <summary><strong>iflow-cli</strong> - AI coding agent for the terminal with free model access via the iFlow platform</summary>
 
 - **Source**: bytecode
