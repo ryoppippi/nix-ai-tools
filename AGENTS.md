@@ -242,6 +242,16 @@ fi
    - Use `autoPatchelfHook` on Linux to handle dynamic library dependencies
    - Common missing libraries: `gcc-unwrapped.lib` for libgcc_s.so.1
 
+1. **Bun-compiled binaries**: Single-file executables produced by `bun build --compile` embed the JS bytecode at the tail of the binary. Stripping corrupts that payload, so always set `dontStrip = true` for bun-compiled tools. Use `coderabbit-cli` as the reference example; other bun-compiled packages in this repo include `amp`, `claude-code`, `cubic`, `opencode`, and `qoder-cli`.
+
+   To detect whether an upstream binary is bun-compiled, run it with the `BUN_BE_BUN` environment variable set — bun-compiled binaries will print bun's CLI usage instead of running the embedded entrypoint:
+
+   ```bash
+   BUN_BE_BUN=1 nix run --accept-flake-config path:.#<package>
+   ```
+
+   Note: `claude-code` is also bun-compiled, but Anthropic patches the runtime to disable `BUN_BE_BUN`, so this detection trick does not work for it. For every other tool the flag is a reliable indicator.
+
 1. **Update scripts**: Follow shellcheck recommendations - declare and assign variables separately to avoid masking return values.
 
 1. **Custom nix-update arguments**: For packages that need special nix-update flags (e.g., filtering out nightly releases), create a `nix-update-args` file with one argument per line:
