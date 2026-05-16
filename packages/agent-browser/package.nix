@@ -44,8 +44,8 @@ let
       pname = "${pname}-dashboard";
       inherit version src;
       pnpm = pnpm_10;
-      hash = "sha256-p9xpkR15JRq3zzx0GtICpETqRWLyHT7RTgkQ0Y9qWsY=";
-      fetcherVersion = 2;
+      hash = "sha256-xNxNFvaw5sdX0ZaBIUf449wIHQNifMPK3I+qi+yp+UU=";
+      fetcherVersion = 3;
     };
 
     # next/font/google fetches Geist from fonts.googleapis.com at build

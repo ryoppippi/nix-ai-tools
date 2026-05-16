@@ -41,7 +41,7 @@ stdenv.mkDerivation (finalAttrs: {
     inherit pnpmWorkspaces;
     pnpm = pnpm_10;
     hash = pin.pnpmDepsHash;
-    fetcherVersion = 2;
+    fetcherVersion = 3;
   };
 
   inherit pnpmWorkspaces;

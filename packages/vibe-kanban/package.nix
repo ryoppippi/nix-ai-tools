@@ -61,7 +61,7 @@ let
       inherit version src;
       pnpm = pnpm_10;
       hash = npmDepsHash;
-      fetcherVersion = 2;
+      fetcherVersion = 3;
     };
 
     buildPhase = ''
