@@ -3,7 +3,7 @@
   stdenv,
   fetchzip,
   makeWrapper,
-  nodejs,
+  bun,
   versionCheckHook,
   versionCheckHomeHook,
 }:
@@ -26,8 +26,14 @@ stdenv.mkDerivation rec {
 
     cp -r dist $out/lib
 
-    makeWrapper ${nodejs}/bin/node $out/bin/ccusage \
-      --add-flags $out/lib/cli.js
+    # ccusage 19+ ships a `cli.js` launcher that re-execs into either
+    # `main.bun.js` (under Bun) or `main.node.js` (under Node). Skip
+    # that indirection and point the wrapper at `main.bun.js` to run
+    # the intended Bun entrypoint directly.
+    # For ccusage <=18 the entry point was `index.js`; restore that if
+    # the package is ever downgraded.
+    makeWrapper ${bun}/bin/bun $out/bin/ccusage \
+      --add-flags $out/lib/main.bun.js
 
     runHook postInstall
   '';
