@@ -219,6 +219,12 @@ def strip_workspace_entries(
         "",
         text,
     )
+    # Also strip any remaining unscoped copyPathToStore entries
+    text = re.sub(
+        r'  "[^"]*"\s*=\s*copyPathToStore\s+[^;]+;\n',
+        "",
+        text,
+    )
     text = text.replace(
         "}:\n{",
         "}:\n{\n  # Workspace packages are in the source tree, resolved at build time",
