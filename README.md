@@ -554,53 +554,13 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
-<summary><strong>ccusage</strong> - Usage analysis tool for Claude Code</summary>
+<summary><strong>ccusage</strong> - Analyze coding agent CLI token usage and costs from local data</summary>
 
 - **Source**: bytecode
 - **License**: MIT
 - **Homepage**: https://github.com/ryoppippi/ccusage
 - **Usage**: `nix run github:numtide/llm-agents.nix#ccusage -- --help`
 - **Nix**: [packages/ccusage/package.nix](packages/ccusage/package.nix)
-
-</details>
-<details>
-<summary><strong>ccusage-amp</strong> - Usage analysis tool for Amp CLI sessions</summary>
-
-- **Source**: bytecode
-- **License**: MIT
-- **Homepage**: https://github.com/ryoppippi/ccusage
-- **Usage**: `nix run github:numtide/llm-agents.nix#ccusage-amp -- --help`
-- **Nix**: [packages/ccusage-amp/package.nix](packages/ccusage-amp/package.nix)
-
-</details>
-<details>
-<summary><strong>ccusage-codex</strong> - Usage analysis tool for OpenAI Codex sessions</summary>
-
-- **Source**: bytecode
-- **License**: MIT
-- **Homepage**: https://github.com/ryoppippi/ccusage
-- **Usage**: `nix run github:numtide/llm-agents.nix#ccusage-codex -- --help`
-- **Nix**: [packages/ccusage-codex/package.nix](packages/ccusage-codex/package.nix)
-
-</details>
-<details>
-<summary><strong>ccusage-opencode</strong> - Usage analysis tool for OpenCode sessions</summary>
-
-- **Source**: bytecode
-- **License**: MIT
-- **Homepage**: https://github.com/ryoppippi/ccusage
-- **Usage**: `nix run github:numtide/llm-agents.nix#ccusage-opencode -- --help`
-- **Nix**: [packages/ccusage-opencode/package.nix](packages/ccusage-opencode/package.nix)
-
-</details>
-<details>
-<summary><strong>ccusage-pi</strong> - Pi-agent usage tracking for Claude Max</summary>
-
-- **Source**: bytecode
-- **License**: MIT
-- **Homepage**: https://github.com/ryoppippi/ccusage
-- **Usage**: `nix run github:numtide/llm-agents.nix#ccusage-pi -- --help`
-- **Nix**: [packages/ccusage-pi/package.nix](packages/ccusage-pi/package.nix)
 
 </details>
 

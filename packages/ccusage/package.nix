@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchzip,
+  makeWrapper,
   nodejs,
   versionCheckHook,
   versionCheckHomeHook,
@@ -9,25 +10,24 @@
 
 stdenv.mkDerivation rec {
   pname = "ccusage";
-  version = "18.0.11";
+  version = "19.0.2";
 
   src = fetchzip {
     url = "https://registry.npmjs.org/ccusage/-/ccusage-${version}.tgz";
-    hash = "sha256-6MTCtMjE72uhcnj9zTkP2PIU7yKVXG+tby54o0gcTWQ=";
+    hash = "sha256-vZwWiVEQG6sbc4Z9IIgN9hXS2FvkMSW/7n09/o7ZI/I=";
   };
+
+  nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/bin
 
-    cp -r dist/* $out/bin/
+    cp -r dist $out/lib
 
-    chmod +x $out/bin/index.js
-    mv $out/bin/index.js $out/bin/ccusage
-
-    substituteInPlace $out/bin/ccusage \
-      --replace-fail "#!/usr/bin/env node" "#!${nodejs}/bin/node"
+    makeWrapper ${nodejs}/bin/node $out/bin/ccusage \
+      --add-flags $out/lib/cli.js
 
     runHook postInstall
   '';
@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
   passthru.category = "Usage Analytics";
 
   meta = with lib; {
-    description = "Usage analysis tool for Claude Code";
+    description = "Analyze coding agent CLI token usage and costs from local data";
     homepage = "https://github.com/ryoppippi/ccusage";
     changelog = "https://github.com/ryoppippi/ccusage/releases/tag/v${version}";
     license = licenses.mit;
