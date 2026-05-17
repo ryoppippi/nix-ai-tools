@@ -3,24 +3,20 @@
   buildNpmPackage,
   fetchFromGitHub,
   fetchPnpmDeps,
-  # Lockfile predates pnpm 11's stricter overrides validation
-  pnpm_10,
+  pnpm,
   pnpmConfigHook,
   versionCheckHook,
 }:
 
-let
-  pnpm = pnpm_10;
-in
 buildNpmPackage rec {
   pname = "nanocoder";
-  version = "1.25.2";
+  version = "1.26.1";
 
   src = fetchFromGitHub {
     owner = "Mote-Software";
     repo = "nanocoder";
     rev = "v${version}";
-    hash = "sha256-Ccho0mKv1unmzmvwcbK7c0hA7BQebFUWKSMug21NFzg=";
+    hash = "sha256-vlBnLYfiUG0adKY6LpecSvixGToOw0gqb84rtx1gIDs=";
     postFetch = ''
       rm -f $out/pnpm-workspace.yaml
     '';
@@ -31,8 +27,16 @@ buildNpmPackage rec {
     inherit pname version src;
     inherit pnpm;
     fetcherVersion = 3;
-    hash = "sha256-FFRHvQ5HKQ9v2Wwh8W7ILWb0FlLrVD+ktYBwjNVAfrI=";
+    hash = "sha256-WCZVZcq8SymmBFShuGBeXNiBRIB+BIhG3u78Vy4Zby0=";
+    # Upstream lockfile has stale patchedDependencies not in package.json
+    postPatch = ''
+      sed -i '/^patchedDependencies:/,/^$/d' pnpm-lock.yaml
+    '';
   };
+
+  postPatch = ''
+    sed -i '/^patchedDependencies:/,/^$/d' pnpm-lock.yaml
+  '';
 
   nativeBuildInputs = [ pnpm ];
   npmConfigHook = pnpmConfigHook;
