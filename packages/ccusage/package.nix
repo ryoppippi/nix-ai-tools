@@ -1,42 +1,43 @@
 {
   lib,
+  fetchFromGitHub,
+  rustPlatform,
+  pkg-config,
   stdenv,
-  fetchzip,
-  makeWrapper,
-  bun,
+  libiconv,
   versionCheckHook,
   versionCheckHomeHook,
 }:
 
-stdenv.mkDerivation rec {
+rustPlatform.buildRustPackage rec {
   pname = "ccusage";
-  version = "19.0.3";
+  version = "20.0.0";
 
-  src = fetchzip {
-    url = "https://registry.npmjs.org/ccusage/-/ccusage-${version}.tgz";
-    hash = "sha256-9nIZhmt9h2pzEtCpKs4SJ+2T6I+w4lFcAnRGeXvbgxk=";
+  src = fetchFromGitHub {
+    owner = "ryoppippi";
+    repo = "ccusage";
+    rev = "v${version}";
+    hash = "sha256-OD+yzs8fAL4bOwMlo2DzLiUH7mu9zSIMoAm1s5yraU8=";
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  sourceRoot = "${src.name}/rust";
 
-  installPhase = ''
-    runHook preInstall
+  cargoHash = "sha256-lZgbix8kSYEjNP+XWrj3WTy32MoGT+z/6mCJJapGOOw=";
 
-    mkdir -p $out/bin
+  cargoBuildFlags = [
+    "-p"
+    "ccusage"
+    "--bin"
+    "ccusage"
+  ];
 
-    cp -r dist $out/lib
+  doCheck = false;
 
-    # ccusage 19+ ships a `cli.js` launcher that re-execs into either
-    # `main.bun.js` (under Bun) or `main.node.js` (under Node). Skip
-    # that indirection and point the wrapper at `main.bun.js` to run
-    # the intended Bun entrypoint directly.
-    # For ccusage <=18 the entry point was `index.js`; restore that if
-    # the package is ever downgraded.
-    makeWrapper ${bun}/bin/bun $out/bin/ccusage \
-      --add-flags $out/lib/main.bun.js
+  nativeBuildInputs = [ pkg-config ];
 
-    runHook postInstall
-  '';
+  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [ libiconv ];
+
+  env.CCUSAGE_SKIP_PRICING_FETCH = "1";
 
   doInstallCheck = true;
 
@@ -52,7 +53,7 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/ryoppippi/ccusage";
     changelog = "https://github.com/ryoppippi/ccusage/releases/tag/v${version}";
     license = licenses.mit;
-    sourceProvenance = with lib.sourceTypes; [ binaryBytecode ];
+    sourceProvenance = with lib.sourceTypes; [ fromSource ];
     maintainers = with maintainers; [ ryoppippi ];
     mainProgram = "ccusage";
     platforms = platforms.all;
