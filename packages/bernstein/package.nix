@@ -96,6 +96,7 @@ python3.pkgs.buildPythonApplication rec {
   pythonRelaxDeps = [
     "click"
     "cryptography"
+    "idna"
     "openai"
     "opentelemetry-api"
     "opentelemetry-exporter-otlp"
@@ -103,6 +104,7 @@ python3.pkgs.buildPythonApplication rec {
     "pillow"
     "pydantic-settings"
     "python-dotenv"
+    "starlette"
   ];
 
   # bernstein re-invokes itself and uvicorn via ``sys.executable -m ...``
