@@ -3,22 +3,37 @@
   flake,
   buildNpmPackage,
   fetchFromGitHub,
+  fetchPnpmDeps,
+  pnpm,
+  pnpmConfigHook,
   versionCheckHook,
   versionCheckHomeHook,
 }:
 
 buildNpmPackage rec {
   pname = "gnhf";
-  version = "0.1.41";
+  version = "0.1.42";
 
   src = fetchFromGitHub {
     owner = "kunchenguid";
     repo = "gnhf";
     rev = "gnhf-v${version}";
-    hash = "sha256-ajm9YU26Yf1RzE3dHD1GoUX55UXqgbwT2kUsNvtPjks=";
+    hash = "sha256-8dTfXCULAoXMJwb38bEMCazT7jzT130rzpLivVkx3Wc=";
   };
 
-  npmDepsHash = "sha256-QvU0AbTEbdylqUcrPEdQrO2DbF99qncsMBH3qdXCuSc=";
+  npmDeps = null;
+  pnpmDeps = fetchPnpmDeps {
+    inherit pname version src;
+    inherit pnpm;
+    fetcherVersion = 3;
+    hash = "sha256-sqLCB3xSsd+eIbwFh2JrXUDYVt9Y5TCPKV5eBaBrZxs=";
+  };
+
+  nativeBuildInputs = [ pnpm ];
+  npmConfigHook = pnpmConfigHook;
+
+  # npm prune hangs forever in pnpm-managed node_modules
+  dontNpmPrune = true;
 
   doInstallCheck = true;
   nativeInstallCheckInputs = [
