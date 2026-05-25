@@ -80,6 +80,15 @@ stdenv.mkDerivation {
     stdenv.cc.cc.lib
   ];
 
+  # @parcel/watcher's native .node addon is dlopen'd from bun's virtual
+  # filesystem at runtime.  wrapBuddy cannot patch it, but if libstdc++
+  # is already loaded in the process the linker resolves it from there.
+  # Inject libstdc++.so.6 as a DT_NEEDED entry via wrapBuddy so it's
+  # loaded before the addon (see #5170).
+  wrapBuddyExtraNeeded = lib.optionals stdenv.hostPlatform.isLinux [
+    "libstdc++.so.6"
+  ];
+
   dontConfigure = true;
   dontBuild = true;
   # otherwise strip will remove the compressed typescript code

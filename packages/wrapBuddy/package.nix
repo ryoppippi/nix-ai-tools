@@ -15,8 +15,8 @@ let
   src = fetchFromGitHub {
     owner = "Mic92";
     repo = "wrap-buddy";
-    rev = "v${version}";
-    hash = "sha256-kZfaqMDKV0zyw8OP2HWJgGEHnbIXPUz2yI6Yl9MlilU=";
+    rev = "ba5ab56ddc572482c26b2cf08414befc5f66ad40";
+    hash = "sha256-NlBlJbQsFKDgUtawzAEGF0iIO/xON2LXGw/axFOU4g8=";
   };
 
   # Get interpreter info from stdenv attributes (avoids IFD)
