@@ -44,7 +44,14 @@ def main() -> None:
     print("Calculating source hash...")
     source_hash = calculate_url_hash(tarball_url)
 
-    if not extract_or_generate_lockfile(tarball_url, SCRIPT_DIR / "package-lock.json"):
+    # openspecui is published from a workspace; its devDependencies use the
+    # workspace:* protocol that npm cannot resolve here. package.nix strips
+    # them via `del(.devDependencies)`, so do the same when generating the lock.
+    if not extract_or_generate_lockfile(
+        tarball_url,
+        SCRIPT_DIR / "package-lock.json",
+        strip_dev_dependencies=True,
+    ):
         return
 
     # Update hashes.json

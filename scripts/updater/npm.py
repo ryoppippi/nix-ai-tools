@@ -37,6 +37,7 @@ def extract_or_generate_lockfile(
     output_path: Path,
     *,
     env: dict[str, str] | None = None,
+    strip_dev_dependencies: bool = False,
 ) -> bool:
     """Extract an npm lockfile from npm tarball or generate it.
 
@@ -47,6 +48,11 @@ def extract_or_generate_lockfile(
         tarball_url: URL to the npm package tarball
         output_path: Path where package-lock.json should be written
         env: Optional environment variables to pass to npm install
+        strip_dev_dependencies: Drop devDependencies from package.json before
+            generating the lockfile. Needed for packages published from a
+            workspace whose devDependencies use the ``workspace:*`` protocol,
+            which npm cannot resolve outside the monorepo. Mirror this with a
+            matching ``del(.devDependencies)`` in the package's derivation.
 
     Returns:
         True if lockfile was successfully extracted or generated, False otherwise
@@ -82,9 +88,16 @@ def extract_or_generate_lockfile(
 
         # Generate if not in tarball
         print("No npm lockfile in tarball, generating package-lock.json...")
-        if not (package_dir / "package.json").exists():
+        package_json = package_dir / "package.json"
+        if not package_json.exists():
             print("ERROR: No package.json found!")
             return False
+
+        if strip_dev_dependencies:
+            manifest = json.loads(package_json.read_text())
+            if manifest.pop("devDependencies", None) is not None:
+                package_json.write_text(json.dumps(manifest, indent=2) + "\n")
+                print("Stripped devDependencies before generating lockfile")
 
         run_env = {**os.environ, **(env or {})}
 
