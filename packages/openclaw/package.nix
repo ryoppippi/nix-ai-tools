@@ -37,8 +37,8 @@ stdenv.mkDerivation (finalAttrs: {
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     inherit pnpm;
-    hash = "sha256-6v+ZYBLqh30MbddSSMUnZrDzxriIMP8znGpxhuLcN4Q=";
-    fetcherVersion = 2;
+    hash = "sha256-GiqtQ0HtdfpVmCK1sDZPt/KeGPcHUe6I4piAbzIxOBQ=";
+    fetcherVersion = 3;
     prePnpmInstall = stripPatchedDeps;
   };
 
