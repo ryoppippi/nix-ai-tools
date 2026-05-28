@@ -6,22 +6,19 @@
   versionCheckHook,
 }:
 
-let
-  versionData = lib.importJSON ./hashes.json;
-in
-buildNpmPackage {
+buildNpmPackage rec {
   npmDepsFetcherVersion = 2;
   pname = "context-hub";
-  inherit (versionData) version;
+  version = "0.1.4";
 
   src = fetchFromGitHub {
     owner = "andrewyng";
     repo = "context-hub";
-    # upstream does not tag releases; rev/version maintained by update.py
-    inherit (versionData) rev hash;
+    rev = "v${version}";
+    hash = "sha256-BU6SIt5brANngEqVdquQEA6LZcCSH1PNLg5k2b94naM=";
   };
 
-  inherit (versionData) npmDepsHash;
+  npmDepsHash = "sha256-6aejmBVNztS8kAX9eq9HwfPJK6DwOCD3X6rQ5ZMQAmM=";
   makeCacheWritable = true;
 
   dontNpmBuild = true;
@@ -52,6 +49,7 @@ buildNpmPackage {
   meta = {
     description = "CLI for Context Hub - search and retrieve LLM-optimized docs and skills";
     homepage = "https://github.com/andrewyng/context-hub";
+    changelog = "https://github.com/andrewyng/context-hub/releases/tag/v${version}";
     license = lib.licenses.mit;
     sourceProvenance = with lib.sourceTypes; [ fromSource ];
     maintainers = with flake.lib.maintainers; [ murlakatam ];
