@@ -27,13 +27,6 @@ rustPlatform.buildRustPackage rec {
     sed -i '/^criterion = /d' crates/api/Cargo.toml
   '';
 
-  patches = [
-    # init::tests share a temp dir when SystemTime nanos collide between
-    # parallel test threads (observed on aarch64-darwin in the sandbox).
-    # Upstreamable; drop once merged.
-    ./init-tests-unique-tmpdir.patch
-  ];
-
   cargoHash = "sha256-bmMscPgzy33nEEmv0KpOKa6bwsoxfi2lscQiyz65zM8=";
 
   cargoBuildFlags = [
