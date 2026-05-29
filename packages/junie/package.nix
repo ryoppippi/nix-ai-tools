@@ -110,6 +110,20 @@ stdenv.mkDerivation {
     export JAVA_TOOL_OPTIONS="-Duser.home=$(mktemp -d)"
   '';
 
+  # Launching the app bundle from $out during versionCheckPhase makes macOS
+  # attach a protected com.apple.macl xattr to junie.app. nix-daemon then
+  # fails to canonicalise the output ("clearing flags of path ...: Operation
+  # not permitted"). The xattr cannot be removed, but recreating the
+  # directory entry (children are just rename()d) drops it.
+  postInstallCheck = lib.optionalString stdenv.hostPlatform.isDarwin ''
+    mv "$out/Applications/junie.app" "$out/Applications/.junie.app.tmp"
+    mkdir "$out/Applications/junie.app"
+    shopt -s dotglob
+    mv "$out/Applications/.junie.app.tmp"/* "$out/Applications/junie.app/"
+    shopt -u dotglob
+    rmdir "$out/Applications/.junie.app.tmp"
+  '';
+
   passthru.category = "AI Coding Agents";
 
   meta = with lib; {
