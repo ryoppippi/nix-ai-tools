@@ -14,8 +14,8 @@ rustPlatform.buildRustPackage rec {
   src = fetchFromGitHub {
     owner = "ultraworkers";
     repo = "claw-code";
-    rev = "efe59c22e4a9a3e553753181ee657eaf8a0c8146";
-    hash = "sha256-A+RV7Kn3PR30tBF+3F3o/zlWKP+xZsq3yfkONTLdnTI=";
+    rev = "de7edd5bb129ec461bd0c4a5ad95dc1d9fe070ee";
+    hash = "sha256-C6JP6exZ/8990gUvd/Zj5zFwH2LtQNYJNPF3wSaYjwQ=";
   };
 
   sourceRoot = "source/rust";
