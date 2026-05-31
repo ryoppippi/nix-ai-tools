@@ -165,14 +165,14 @@ let
 in
 python.pkgs.buildPythonApplication rec {
   pname = "mistral-vibe";
-  version = "2.12.1";
+  version = "2.13.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "mistralai";
     repo = "mistral-vibe";
     rev = "v${version}";
-    hash = "sha256-aMh1gVTsK8rDe9DVGjFci40OizCln4lDKCN/Vz+6vAs=";
+    hash = "sha256-N4VkqsqcjJfRJwShs5JGyoeGXgc8Ioa0M3UZbO68z0A=";
   };
 
   build-system = with python.pkgs; [
@@ -213,6 +213,7 @@ python.pkgs.buildPythonApplication rec {
     tomli-w
     tree-sitter
     tree-sitter-bash
+    truststore
     watchfiles
     websockets
     zstandard
