@@ -9,16 +9,16 @@
 buildNpmPackage rec {
   npmDepsFetcherVersion = 2;
   pname = "codegraph";
-  version = "0.9.7";
+  version = "0.9.8";
 
   src = fetchFromGitHub {
     owner = "colbymchenry";
     repo = "codegraph";
     rev = "v${version}";
-    hash = "sha256-s1fV+x6NAPjcrr0MG4KqTNelo8gXwE6WvLUdQGwyEIA=";
+    hash = "sha256-DaVTUuaVsKS020HcIsD9R7jwxZw9yI1bgIsFOHyd/MY=";
   };
 
-  npmDepsHash = "sha256-ujfsy5SrbWLlUL7H4W13n3wFoww1uC+SKSaiNRTCs8I=";
+  npmDepsHash = "sha256-cfw+WzgSJ9DyWyf5CjO0nom6HBtl3Vru8lcW7wcZGzM=";
   makeCacheWritable = true;
 
   nativeInstallCheckInputs = [ versionCheckHook ];
