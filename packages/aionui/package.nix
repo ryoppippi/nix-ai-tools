@@ -124,9 +124,8 @@ stdenv.mkDerivation {
       (cd "$betterSqliteDir" && node "$nodeGyp" rebuild --release)
     fi
 
-    bunx electron-vite build
-    node scripts/build-mcp-servers.js
-    bun run build:server
+    # The desktop config also builds the MCP servers via a closeBundle plugin
+    bunx electron-vite build --config packages/desktop/electron.vite.config.ts
 
     runHook postBuild
   '';
@@ -148,7 +147,8 @@ stdenv.mkDerivation {
     cp package.json $appRoot/
     cp -r node_modules $appRoot/
     cp -r out $appRoot/
-    cp -r dist-server $appRoot/
+    # node_modules contains symlinks into the workspace packages
+    cp -r packages $appRoot/
     cp -r public $appRoot/
     cp -r resources $appRoot/
 
@@ -191,24 +191,6 @@ stdenv.mkDerivation {
       --run "cd '$appRoot'" \
       --add-flags "--no-sandbox --disable-setuid-sandbox" \
       --add-flags "$appRoot"
-
-    makeWrapper ${bun}/bin/bun $out/bin/aionui-server \
-      --set NODE_ENV production \
-      --prefix LD_LIBRARY_PATH : ${
-        lib.makeLibraryPath [
-          stdenv.cc.cc.lib
-          glib
-          libsecret
-        ]
-      } \
-      --prefix PATH : ${
-        lib.makeBinPath [
-          bun
-          nodejs
-        ]
-      } \
-      --run "cd '$appRoot'" \
-      --add-flags "$appRoot/dist-server/server.mjs"
 
     runHook postInstall
   '';
