@@ -22,14 +22,16 @@ let
   flake = builtins.getFlake (toString ./.);
   pkgs = flake.packages.${config.system};
   isHidden = pkg: pkg.passthru.hideFromDocs or false;
+  updateEvenIfHidden = pkg: pkg.passthru.updateEvenIfHidden or false;
+  shouldDiscover = pkg: !(isHidden pkg) || updateEvenIfHidden pkg;
   getVersion = name:
-    if pkgs ? ${name} && pkgs.${name} ? version && !(isHidden pkgs.${name})
+    if pkgs ? ${name} && pkgs.${name} ? version && shouldDiscover pkgs.${name}
     then { inherit name; value = pkgs.${name}.version; }
     else null;
 in
   if config.filter == null then
     builtins.mapAttrs (name: pkg:
-      if pkg ? version && !(isHidden pkg) then pkg.version else null
+      if pkg ? version && shouldDiscover pkg then pkg.version else null
     ) pkgs
   else
     builtins.listToAttrs

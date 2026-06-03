@@ -637,6 +637,16 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
+<summary><strong>gascity</strong> - Orchestration-builder SDK for multi-agent coding workflows</summary>
+
+- **Source**: source
+- **License**: MIT
+- **Homepage**: https://github.com/gastownhall/gascity
+- **Usage**: `nix run github:numtide/llm-agents.nix#gascity -- --help`
+- **Nix**: [packages/gascity/package.nix](packages/gascity/package.nix)
+
+</details>
+<details>
 <summary><strong>gastown</strong> - Gas Town - multi-agent workspace manager</summary>
 
 - **Source**: source
