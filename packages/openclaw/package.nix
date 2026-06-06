@@ -95,7 +95,6 @@ stdenv.mkDerivation (finalAttrs: {
     # Remove development/build files not needed at runtime
     pushd $out/lib/openclaw
     rm -rf \
-      src \
       test \
       apps \
       Swabble \
