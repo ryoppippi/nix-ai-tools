@@ -20,20 +20,6 @@ rustPlatform.buildRustPackage rec {
 
   sourceRoot = "source/rust";
 
-  # Upstream merge commit ae2f203 botched the conflict resolution in
-  # crates/api/src/providers/openai_compat.rs, leaving a duplicated tail of
-  # send_message behind the closing brace, which fails to parse. Drop the
-  # stray block until upstream fixes it.
-  # Reported upstream: https://github.com/ultraworkers/claw-code/issues/3235
-  patches = [ ./fix-openai-compat-bad-merge.patch ];
-
-  # Upstream added a criterion dev-dependency to crates/api without
-  # regenerating Cargo.lock, so cargo can't resolve it from the vendored
-  # set. We don't run that crate's benches, so just drop the dep.
-  postPatch = ''
-    sed -i '/^criterion = /d' crates/api/Cargo.toml
-  '';
-
   cargoHash = "sha256-Acaycrxm3e87dx3P7NdWnivopF4xxaMi3PPbpSefEyY=";
 
   cargoBuildFlags = [
