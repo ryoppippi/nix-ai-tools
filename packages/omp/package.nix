@@ -135,11 +135,6 @@ stdenv.mkDerivation {
     "
   '';
 
-  # Export upstream's worker entrypoint list and guard its main() so we can
-  # import the list in buildPhase instead of duplicating it here. Fails to
-  # apply when upstream restructures the script, forcing a review on bumps.
-  patches = [ ./expose-worker-entrypoints.patch ];
-
   # We handle build and install ourselves
   dontUseBunBuild = true;
   dontUseBunInstall = true;
@@ -224,24 +219,20 @@ stdenv.mkDerivation {
     echo "Generating embedded stats dashboard..."
     bun --cwd packages/stats scripts/generate-client-bundle.ts --generate
 
-    # Compile the standalone binary. Worker entrypoints must be listed
-    # explicitly: bun --compile only embeds modules reachable via static
-    # imports, but workers are spawned by path at runtime (upstream issue
-    # #1150). Reuse the list from upstream's release build script.
+    # Compile the standalone binary. Since v15.11.0 workers re-enter via
+    # Bun.main, so no separate worker entrypoints are needed.
     echo "Compiling standalone binary..."
-    workerEntrypoints=$(bun -e '
-      const { workerEntrypoints } = await import("./scripts/ci-release-build-binaries.ts");
-      if (!Array.isArray(workerEntrypoints) || workerEntrypoints.length === 0) {
-        throw new Error("empty workerEntrypoints in ci-release-build-binaries.ts");
-      }
-      console.write(workerEntrypoints.join(" "));
-    ')
     bun build --compile \
+      --no-compile-autoload-bunfig \
+      --no-compile-autoload-dotenv \
+      --no-compile-autoload-tsconfig \
+      --no-compile-autoload-package-json \
+      --keep-names \
+      --define 'process.env.PI_COMPILED="true"' \
       --external mupdf \
       --target="${platform.bunTarget}" \
       --root . \
       ./packages/coding-agent/src/cli.ts \
-      $workerEntrypoints \
       --outfile dist/omp
 
     runHook postBuild
