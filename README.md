@@ -903,6 +903,16 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
+<summary><strong>lean-ctx</strong> - Context OS for AI development — compression, memory, and routing for LLM context</summary>
+
+- **Source**: source
+- **License**: Apache-2.0
+- **Homepage**: https://github.com/yvgude/lean-ctx
+- **Usage**: `nix run github:numtide/llm-agents.nix#lean-ctx -- --help`
+- **Nix**: [packages/lean-ctx/package.nix](packages/lean-ctx/package.nix)
+
+</details>
+<details>
 <summary><strong>memvid-cli</strong> - AI memory CLI - crash-safe, single-file storage with semantic search</summary>
 
 - **Source**: binary
