@@ -16,16 +16,16 @@
 # Upstream rewrote reasonix from TypeScript to Go in 1.0.0.
 buildGoModule rec {
   pname = "reasonix";
-  version = "1.6.0";
+  version = "1.7.0";
 
   src = fetchFromGitHub {
     owner = "esengine";
     repo = "DeepSeek-Reasonix";
     rev = "v${version}";
-    hash = "sha256-R0rAhFRfxAtSxMitYBMpDUMNyZJv0byrAxbXPSiu0fY=";
+    hash = "sha256-1LqDdEX9loA18zdinKRba1DJo6eG8LICnfAwgm4Z7io=";
   };
 
-  vendorHash = "sha256-s5NxBvW86H0oECTL+YDmfeELmIIZ5UvQwyWRb2qicIE=";
+  vendorHash = "sha256-UML4t+WFagt2yHEvr8ql3/B4pcVJncZc5OdycdY0WCo=";
 
   subPackages = [ "cmd/reasonix" ];
 
