@@ -9,13 +9,13 @@
 
 buildDotnetModule rec {
   pname = "officecli";
-  version = "1.0.113";
+  version = "1.0.114";
 
   src = fetchFromGitHub {
     owner = "iOfficeAI";
     repo = "OfficeCLI";
     tag = "v${version}";
-    hash = "sha256-v/LXJOyGE37IO7nFZz1kMWufmGTo6fb1BmLZPl3n/Qk=";
+    hash = "sha256-SnFYtEvnM+4DzKB6gAUQW0v8BtQBTucniV3OnYRepvs=";
   };
 
   dotnet-sdk = dotnetCorePackages.sdk_10_0;
