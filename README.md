@@ -340,6 +340,16 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 - **Nix**: [packages/reasonix/package.nix](packages/reasonix/package.nix)
 
 </details>
+<details>
+<summary><strong>vix</strong> - Sleek, Fast and Token Efficient AI Coding Agent</summary>
+
+- **Source**: source
+- **License**: AGPL-3.0-only
+- **Homepage**: https://github.com/get-vix/vix
+- **Usage**: `nix run github:numtide/llm-agents.nix#vix -- --help`
+- **Nix**: [packages/vix/package.nix](packages/vix/package.nix)
+
+</details>
 
 ### AI Assistants
 
