@@ -10,16 +10,13 @@
 
 buildNpmPackage rec {
   pname = "nanocoder";
-  version = "1.27.0";
+  version = "1.28.0";
 
   src = fetchFromGitHub {
     owner = "Nano-Collective";
     repo = "nanocoder";
     rev = "v${version}";
-    hash = "sha256-YlFDjuOEPBYbLhb7Ipb4fAO65a4PoICCv3azRMJcztw=";
-    postFetch = ''
-      rm -f $out/pnpm-workspace.yaml
-    '';
+    hash = "sha256-hs6Do1ObudylPe398ZxwZX3S4fHvcPhTHShf9ZcHe1E=";
   };
 
   npmDeps = null;
@@ -27,16 +24,8 @@ buildNpmPackage rec {
     inherit pname version src;
     inherit pnpm;
     fetcherVersion = 3;
-    hash = "sha256-n3PC1HYUbd6awcD7sIq5TE2US7mJzaFWjbpHZDy99Ao=";
-    # Upstream lockfile has stale patchedDependencies not in package.json
-    postPatch = ''
-      sed -i '/^patchedDependencies:/,/^$/d' pnpm-lock.yaml
-    '';
+    hash = "sha256-ZJn7pK/tufjhlEaKNI8lbRB3l+FHl+5qAXJoE+raSPM=";
   };
-
-  postPatch = ''
-    sed -i '/^patchedDependencies:/,/^$/d' pnpm-lock.yaml
-  '';
 
   nativeBuildInputs = [ pnpm ];
   npmConfigHook = pnpmConfigHook;
@@ -45,6 +34,12 @@ buildNpmPackage rec {
   nativeInstallCheckInputs = [ versionCheckHook ];
 
   dontNpmPrune = true; # hangs forever on both Linux/darwin
+
+  # pnpm links the plugins/vscode workspace package into node_modules, but
+  # npm pack does not ship plugins/, leaving a dangling symlink in $out.
+  preFixup = ''
+    rm -f $out/lib/node_modules/@nanocollective/nanocoder/node_modules/.pnpm/node_modules/nanocoder-vscode
+  '';
 
   passthru.category = "AI Coding Agents";
 
