@@ -180,7 +180,7 @@ buildNpmPackage (finalAttrs: {
     })
   ];
 
-  passthru.category = "Workflow & Project Management";
+  passthru.category = "Voice & Transcription";
 
   meta = {
     description = "Voice-controlled desktop development environment for AI coding agents";

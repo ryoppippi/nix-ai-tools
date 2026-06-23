@@ -82,6 +82,7 @@ CATEGORY_ORDER = [
     "Usage Analytics",
     "Workflow & Project Management",
     "Code Review",
+    "Voice & Transcription",
     "Memory & Code Intelligence",
     "Sandboxing & Isolation",
     "Skills & Plugins",
