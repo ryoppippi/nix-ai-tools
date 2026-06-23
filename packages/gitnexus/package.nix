@@ -12,13 +12,13 @@ buildNpmPackage (finalAttrs: {
   npmDepsFetcherVersion = 2;
   forceGitDeps = true;
   pname = "gitnexus";
-  version = "1.6.7";
+  version = "1.6.8";
 
   src = fetchFromGitHub {
     owner = "abhigyanpatwari";
     repo = "GitNexus";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-kpwC2qCrTY+j1qfNG2Cyz/S3xAljmzdYR8aTpf9CcW0=";
+    hash = "sha256-2LvkIlQb4fk1DuI7sXjAm2xgNCQo/OX79A+Lw6xt6Js=";
   };
 
   sourceRoot = "source/gitnexus";
@@ -41,17 +41,17 @@ buildNpmPackage (finalAttrs: {
       --replace-fail "path.join('node_modules', '.bin', 'tsc')" "'tsc'"
   '';
 
-  npmDepsHash = "sha256-xybQCqBHEtoFbXEdkzT1cS8o5RPuzLs8ublujH0sveo=";
+  npmDepsHash = "sha256-qTQTi3KYyPhZib4WWDE5S+tk8iY5rvtCQzBI2P4CA90=";
   makeCacheWritable = true;
 
   npmFlags = [ "--ignore-scripts" ];
 
-  # --ignore-scripts skips the upstream postinstall that copies vendored
-  # tree-sitter grammars (dart/proto/swift) into node_modules; tsc needs
-  # their type declarations. The native binding build is still skipped, as
-  # it was with the 1.6.5 file: optionalDependencies under --ignore-scripts.
+  # --ignore-scripts skips the upstream postinstall that activates the
+  # vendored tree-sitter grammars (c/dart/proto/swift/kotlin) under vendor/.
+  # Run it explicitly so the prebuilt bindings are picked up; the script is
+  # designed to never fail and prefers committed prebuilds over a source build.
   preBuild = ''
-    node scripts/materialize-vendor-grammars.cjs
+    node scripts/build-tree-sitter-grammars.cjs
   '';
 
   nativeBuildInputs = [

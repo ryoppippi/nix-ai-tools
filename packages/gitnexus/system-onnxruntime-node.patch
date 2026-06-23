@@ -1,19 +1,19 @@
 diff --git gitnexus/src/core/embeddings/embedder.ts gitnexus/src/core/embeddings/embedder.ts
-index d873f3a..6e853df 100644
+index 3ec5f08..67ae5ef 100644
 --- gitnexus/src/core/embeddings/embedder.ts
 +++ gitnexus/src/core/embeddings/embedder.ts
-@@ -28,6 +28,7 @@ import { isHttpMode, getHttpDimensions, httpEmbed } from './http-client.js';
- import { resolveEmbeddingConfig } from './config.js';
+@@ -29,6 +29,7 @@ import { resolveEmbeddingConfig } from './config.js';
  import { applyHfEnvOverrides, isHfDownloadFailure, withHfDownloadRetry } from './hf-env.js';
  import { getLocalEmbeddingRuntimeBlocker } from './runtime-support.js';
+ import { ensureOnnxRuntimeCommonResolvable } from './onnxruntime-common-resolver.js';
 +import { applyOnnxruntimeNodeBindingOverride } from './onnxruntime-node-loader.js';
  import { logger } from '../logger.js';
  
  /**
-@@ -179,6 +180,7 @@ export const initEmbedder = async (
-     try {
-       // Lazy-load transformers.js only after the runtime guard has passed, so
-       // unsupported platforms never reach the native ONNX import (#1515).
+@@ -183,6 +184,7 @@ export const initEmbedder = async (
+       // Under pnpm-strict / `pnpm dlx`, transformers' phantom `onnxruntime-common`
+       // import is unresolvable; register the fallback resolver first (#307).
+       ensureOnnxRuntimeCommonResolvable();
 +      applyOnnxruntimeNodeBindingOverride();
        const { pipeline, env } = await import('@huggingface/transformers');
  
@@ -78,21 +78,21 @@ index 0000000..252064f
 +  };
 +};
 diff --git gitnexus/src/mcp/core/embedder.ts gitnexus/src/mcp/core/embedder.ts
-index 451d12c..477c718 100644
+index 4dd73f3..c10f73b 100644
 --- gitnexus/src/mcp/core/embedder.ts
 +++ gitnexus/src/mcp/core/embedder.ts
-@@ -24,6 +24,7 @@ import {
+@@ -23,6 +23,7 @@ import {
+ } from '../../core/embeddings/hf-env.js';
  import { getLocalEmbeddingRuntimeBlocker } from '../../core/embeddings/runtime-support.js';
+ import { ensureOnnxRuntimeCommonResolvable } from '../../core/embeddings/onnxruntime-common-resolver.js';
++import { applyOnnxruntimeNodeBindingOverride } from '../../core/embeddings/onnxruntime-node-loader.js';
  import { silenceStdout, restoreStdout, realStderrWrite } from '../../core/lbug/pool-adapter.js';
  
-+import { applyOnnxruntimeNodeBindingOverride } from '../../core/embeddings/onnxruntime-node-loader.js';
  import { logger } from '../../core/logger.js';
- // Model config
- const MODEL_ID = 'Snowflake/snowflake-arctic-embed-xs';
-@@ -65,6 +66,7 @@ export const initEmbedder = async (): Promise<FeatureExtractionPipeline> => {
-     try {
-       // Lazy-load transformers.js only after the runtime guard has passed, so
-       // unsupported platforms never reach the native ONNX import (#1515).
+@@ -69,6 +70,7 @@ export const initEmbedder = async (): Promise<FeatureExtractionPipeline> => {
+       // Under pnpm-strict / `pnpm dlx`, transformers' phantom `onnxruntime-common`
+       // import is unresolvable; register the fallback resolver first (#307).
+       ensureOnnxRuntimeCommonResolvable();
 +      applyOnnxruntimeNodeBindingOverride();
        const { pipeline, env } = await import('@huggingface/transformers');
  
