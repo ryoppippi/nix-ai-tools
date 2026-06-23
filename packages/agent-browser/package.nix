@@ -14,7 +14,7 @@
 
 let
   pname = "agent-browser";
-  version = "0.28.0";
+  version = "0.29.0";
 
   # Vendored Geist variable font (OFL-1.1) pinned to a specific upstream
   # commit so the dashboard's next/font/local build is fully offline.
@@ -27,7 +27,7 @@ let
     owner = "vercel-labs";
     repo = "agent-browser";
     rev = "v${version}";
-    hash = "sha256-teb32q+MI9x83PdpHijjCiUHiObbbc/dNz8fyd2+TOQ=";
+    hash = "sha256-mZx/MRBs86cNh6b9TVMAwMDcOSZAC+6Ito/p8r2Yuvs=";
   };
 
   dashboard = stdenv.mkDerivation {
@@ -44,7 +44,7 @@ let
       pname = "${pname}-dashboard";
       inherit version src;
       pnpm = pnpm_11;
-      hash = "sha256-hSmlZvGlnvSWpCki1eImUNEe1myfbC3eDVcX07k0Bm4=";
+      hash = "sha256-5p+wwu2SBLJ3uBVFCFpq+tJbfTGU7Kd+qa4CXhIqlLg=";
       fetcherVersion = 3;
     };
 
@@ -78,7 +78,7 @@ rustPlatform.buildRustPackage {
 
   sourceRoot = "source/cli";
 
-  cargoHash = "sha256-k7Y4KFSO4SYeKIjUPqxzAfCSIj4zJo0qMXb5lO/C5ck=";
+  cargoHash = "sha256-VAav0+CUsyMh/3Lx/JyxRkCMSWEbOswGqMriU7NfiaA=";
 
   nativeBuildInputs = lib.optional stdenv.hostPlatform.isLinux makeBinaryWrapper;
   buildInputs = lib.optional stdenv.hostPlatform.isLinux chromium;
@@ -123,7 +123,10 @@ rustPlatform.buildRustPackage {
       --set AGENT_BROWSER_EXECUTABLE_PATH ${chromium}/bin/chromium
   '';
 
-  passthru.category = "Utilities";
+  passthru = {
+    inherit dashboard;
+    category = "Utilities";
+  };
 
   meta = {
     description = "Headless browser automation CLI for AI agents";
