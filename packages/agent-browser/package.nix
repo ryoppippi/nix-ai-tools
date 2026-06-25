@@ -14,7 +14,7 @@
 
 let
   pname = "agent-browser";
-  version = "0.30.1";
+  version = "0.31.0";
 
   # Vendored Geist variable font (OFL-1.1) pinned to a specific upstream
   # commit so the dashboard's next/font/local build is fully offline.
@@ -27,7 +27,7 @@ let
     owner = "vercel-labs";
     repo = "agent-browser";
     rev = "v${version}";
-    hash = "sha256-NWd9qENjHCoOMgd5QWxleBvCn+ShDIEW7oOU5DC2zcI=";
+    hash = "sha256-kZKTt4eglj5WGUhxzHCu6pZogSy4nqxdj9F71artro8=";
   };
 
   dashboard = stdenv.mkDerivation {
@@ -78,7 +78,7 @@ rustPlatform.buildRustPackage {
 
   sourceRoot = "source/cli";
 
-  cargoHash = "sha256-YbqSNPunPMTY3lX7+CDCjFH9cGcOl0n20c2PWsI4Zzw=";
+  cargoHash = "sha256-GKArksZqjWdCBijgopXr3YQ+KuM8LO9K0lRuRuk+VyA=";
 
   nativeBuildInputs = lib.optional stdenv.hostPlatform.isLinux makeBinaryWrapper;
   buildInputs = lib.optional stdenv.hostPlatform.isLinux chromium;
