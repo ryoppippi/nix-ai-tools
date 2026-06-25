@@ -1007,6 +1007,16 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
+<summary><strong>trellis</strong> - An out-of-the-box engineering framework for AI coding.</summary>
+
+- **Source**: source
+- **License**: AGPL-3.0-only
+- **Homepage**: https://github.com/mindfold-ai/trellis
+- **Usage**: `nix run github:numtide/llm-agents.nix#trellis -- --help`
+- **Nix**: [packages/trellis/package.nix](packages/trellis/package.nix)
+
+</details>
+<details>
 <summary><strong>zat</strong> - Code outline viewer for LLM coding agents — shows exported symbols with line numbers</summary>
 
 - **Source**: source
