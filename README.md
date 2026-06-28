@@ -72,7 +72,7 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 <details>
 <summary><strong>copilot-cli</strong> - GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.</summary>
 
-- **Source**: bytecode
+- **Source**: binary
 - **License**: unfree
 - **Homepage**: https://github.com/github/copilot-cli
 - **Usage**: `nix run github:numtide/llm-agents.nix#copilot-cli -- --help`
