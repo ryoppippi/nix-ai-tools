@@ -19,16 +19,16 @@
 buildNpmPackage (finalAttrs: {
   npmDepsFetcherVersion = 2;
   pname = "gemini-cli";
-  version = "0.47.0";
+  version = "0.49.0";
 
   src = fetchFromGitHub {
     owner = "google-gemini";
     repo = "gemini-cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-pabav4ehssc3oQFuF4MgnSG7Ql1r5Y6n+ZzYbgh5tz8=";
+    hash = "sha256-C47U5nTWB0Dq2iPRujRHMDjyyrU0d6xZ3Uv7URcIcg8=";
   };
 
-  npmDepsHash = "sha256-laBG+2KBrBa6FKtPze+lJHg/6t8FWNVr8rTmr27HdKM=";
+  npmDepsHash = "sha256-e3gPyBJg2TPGywpR7iqpDtcRdq6AWlvY725kIGPJmCo=";
   makeCacheWritable = true;
 
   nativeBuildInputs = [
@@ -52,6 +52,14 @@ buildNpmPackage (finalAttrs: {
   '';
 
   postPatch = ''
+    # gemini-cli 0.49.0 ships an inconsistent lockfile: several workspace
+    # package.json files pin exact dependency versions that differ from the
+    # versions package-lock.json actually resolves (e.g. tar 7.5.8 vs 7.5.11,
+    # clipboardy 5.2.0 vs 5.2.1). The offline npm cache is built from the
+    # lockfile, so `npm ci` cannot satisfy the package.json pins and fails with
+    # ETARGET. Rewrite each exact pin to the version the lockfile resolves.
+    node ${./align-pins-to-lock.mjs}
+
     # Point resolveRipgrepPath() at our ripgrep: no bundled rg binaries exist
     # and the trusted-path check rejects /nix/store, so allow the store dir.
     substituteInPlace packages/core/src/tools/ripGrep.ts \
