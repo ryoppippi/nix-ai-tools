@@ -34,10 +34,6 @@
 }:
 
 let
-  # `src` cannot be exposed as a bare callPackage argument because it collides
-  # with the deprecated `pkgs.src` alias (which throws on access). default.nix
-  # passes `src = null`, so fall back to the upstream tarball here unless a
-  # caller overrides it via .override { src = ...; }.
   actualSrc =
     if src != null then
       src
