@@ -55,6 +55,15 @@ stdenv.mkDerivation (finalAttrs: {
   # (it's only needed for npm postinstall scripts)
   dontUseCmakeConfigure = true;
 
+  # The build OOM-kills on memory-constrained aarch64 builders: rolldown (the
+  # Rust bundler behind tsdown) spawns one rayon worker per core, and the
+  # node-side ui:build/tsc lets V8 grow its heap toward the host total. Bound
+  # both so peak RSS stays within the builder's limit.
+  env = {
+    NODE_OPTIONS = "--max-old-space-size=4096";
+    RAYON_NUM_THREADS = "4";
+  };
+
   postPatch = stripPatchedDeps;
 
   preBuild = ''
