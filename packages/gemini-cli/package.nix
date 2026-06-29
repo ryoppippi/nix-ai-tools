@@ -49,17 +49,21 @@ buildNpmPackage (finalAttrs: {
   preConfigure = ''
     mkdir -p packages/generated
     echo "export const GIT_COMMIT_INFO = { commitHash: '${finalAttrs.src.rev}' };" > packages/generated/git-commit.ts
-  '';
 
-  postPatch = ''
     # gemini-cli 0.49.0 ships an inconsistent lockfile: several workspace
     # package.json files pin exact dependency versions that differ from the
     # versions package-lock.json actually resolves (e.g. tar 7.5.8 vs 7.5.11,
     # clipboardy 5.2.0 vs 5.2.1). The offline npm cache is built from the
     # lockfile, so `npm ci` cannot satisfy the package.json pins and fails with
     # ETARGET. Rewrite each exact pin to the version the lockfile resolves.
+    # Runs in preConfigure, not postPatch: postPatch also executes inside the
+    # npm-deps fetcher FOD, where node is unavailable (node: command not found).
+    # The cache is built from the lockfile, so the alignment only needs to take
+    # effect before `npm ci` in the main build.
     node ${./align-pins-to-lock.mjs}
+  '';
 
+  postPatch = ''
     # Point resolveRipgrepPath() at our ripgrep: no bundled rg binaries exist
     # and the trusted-path check rejects /nix/store, so allow the store dir.
     substituteInPlace packages/core/src/tools/ripGrep.ts \
