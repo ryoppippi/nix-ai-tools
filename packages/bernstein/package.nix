@@ -104,6 +104,7 @@ python3.pkgs.buildPythonApplication rec {
     "pillow"
     "pydantic-settings"
     "python-dotenv"
+    "reportlab"
     "starlette"
   ];
 
