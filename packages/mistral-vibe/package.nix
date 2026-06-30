@@ -208,6 +208,7 @@ python.pkgs.buildPythonApplication rec {
     pyyaml
     requests
     rich
+    sentry-sdk
     sounddevice
     textual
     textual-speedups
