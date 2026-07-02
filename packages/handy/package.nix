@@ -17,6 +17,7 @@
   gtk-layer-shell,
   libayatana-appindicator,
   libsoup_3,
+  openblas,
   openssl,
   vulkan-loader,
   webkitgtk_4_1,
@@ -83,6 +84,7 @@ stdenv.mkDerivation {
     gtk3
     gtk-layer-shell
     libsoup_3
+    openblas
     openssl
     vulkan-loader
     webkitgtk_4_1
@@ -122,12 +124,13 @@ stdenv.mkDerivation {
         # Install the binary
         install -Dm755 usr/bin/handy $out/bin/handy
 
-        # Install the bundled onnxruntime. Upstream onnxruntime tags its
-        # exported symbols with a VERS_<exact-version> ELF symbol version, so
-        # the prebuilt handy binary can only load the exact libonnxruntime
-        # version it was linked against and is not compatible with whatever
-        # version nixpkgs currently ships.
-        install -Dm755 usr/lib/libonnxruntime.so.1 $out/lib/libonnxruntime.so.1
+        # Install the bundled shared libraries (libtranscribe, libggml,
+        # libonnxruntime, ...). handy links against these exact builds — e.g.
+        # onnxruntime tags its exports with a VERS_<exact-version> ELF symbol
+        # version, so the prebuilt binary cannot load nixpkgs' onnxruntime —
+        # so ship them and let autoPatchelf add $out/lib to the rpath.
+        mkdir -p $out/lib
+        cp -P usr/lib/*.so* $out/lib/
 
         # Install resources
         mkdir -p $out/lib/Handy/resources
