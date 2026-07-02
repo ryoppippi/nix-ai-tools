@@ -40,6 +40,8 @@ stdenv.mkDerivation rec {
     wrapBuddy
   ];
 
+  wrapBuddyExtraNeeded = [ "libz.so.1" ];
+
   doInstallCheck = true;
   nativeInstallCheckInputs = [
     versionCheckHook
