@@ -121,22 +121,18 @@ stdenv.mkDerivation {
       ''
         runHook preInstall
 
-        # Install the binary
         install -Dm755 usr/bin/handy $out/bin/handy
 
-        # Install the bundled shared libraries (libtranscribe, libggml,
-        # libonnxruntime, ...). handy links against these exact builds — e.g.
-        # onnxruntime tags its exports with a VERS_<exact-version> ELF symbol
-        # version, so the prebuilt binary cannot load nixpkgs' onnxruntime —
-        # so ship them and let autoPatchelf add $out/lib to the rpath.
-        mkdir -p $out/lib
-        cp -P usr/lib/*.so* $out/lib/
+        # Bundled libs go in a private dir, not $out/lib, to avoid clashing
+        # with identically named libraries from other packages (e.g.
+        # whisper-cpp's libggml-cpu-cascadelake.so) in shared profiles.
+        # The autoPatchelf hook (formatelf) rewrites the RPATHs to find them.
+        mkdir -p $out/lib/handy
+        cp -a usr/lib/*.so* $out/lib/handy/
 
-        # Install resources
         mkdir -p $out/lib/Handy/resources
         cp -r usr/lib/Handy/resources/* $out/lib/Handy/resources/
 
-        # Install icons
         mkdir -p $out/share/icons/hicolor
         if [ -d usr/share/icons/hicolor ]; then
           cp -r usr/share/icons/hicolor/* $out/share/icons/hicolor/
@@ -151,7 +147,6 @@ stdenv.mkDerivation {
         mkdir -p $out/Applications
         cp -r ./unpacked/Handy.app $out/Applications/
 
-        # Create a wrapper script in bin
         mkdir -p $out/bin
         makeWrapper $out/Applications/Handy.app/Contents/MacOS/Handy $out/bin/handy
 

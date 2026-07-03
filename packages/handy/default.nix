@@ -1,1 +1,4 @@
-{ pkgs, ... }: pkgs.callPackage ./package.nix { }
+{ pkgs, perSystem, ... }:
+pkgs.callPackage ./package.nix {
+  autoPatchelfHook = perSystem.self.formatelf;
+}
