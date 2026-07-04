@@ -40,6 +40,9 @@ let
     inherit version src;
     sourceRoot = "${src.name}/frontend";
     inherit npmDepsHash;
+    # @kenn-io/kit-ui is a git dependency with install scripts but no lockfile.
+    forceGitDeps = true;
+    makeCacheWritable = true;
     # vite-plus eagerly constructs a reqwest client on startup and panics
     # when SSL_CERT_FILE points at stdenv's /no-cert-file.crt sentinel.
     # Give it a real CA bundle so the client builds; the sandbox still
