@@ -164,7 +164,7 @@ python.pkgs.buildPythonApplication rec {
   src = fetchFromGitHub {
     owner = "mistralai";
     repo = "mistral-vibe";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-PODG/SQsZsixBz/j+k8ALBhXS1fPg3v/o6TXkTyzSIQ=";
   };
 

@@ -27,7 +27,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "mindfold-ai";
     repo = "trellis";
-    rev = "v${finalAttrs.version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-GX9EnmiCC+jTupx/Ahjmfkt/Ct3YAnu9UERVhv4tuTg=";
   };
 

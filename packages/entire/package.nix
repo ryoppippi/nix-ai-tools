@@ -18,7 +18,7 @@
   src = fetchFromGitHub {
     owner = "entireio";
     repo = "cli";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-SqJnrvRwjuPMCEkd4d+ULIUOfDW6mPs6VeW84Tc5vN0=";
   };
 

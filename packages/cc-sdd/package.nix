@@ -18,7 +18,7 @@ buildNpmPackage {
   src = fetchFromGitHub {
     owner = "gotalab";
     repo = "cc-sdd";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

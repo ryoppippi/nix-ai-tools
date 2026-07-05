@@ -21,7 +21,7 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "fencesandbox";
     repo = "fence";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-uJfQFOKR3f8OjzA1z18IeKvhAgTmQQ7o4Y7K4CFbwko=";
   };
 

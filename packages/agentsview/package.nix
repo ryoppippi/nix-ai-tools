@@ -24,7 +24,7 @@ let
   src = fetchFromGitHub {
     owner = "kenn-io";
     repo = "agentsview";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

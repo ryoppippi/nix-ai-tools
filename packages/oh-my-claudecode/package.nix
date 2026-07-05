@@ -14,7 +14,7 @@ buildNpmPackage (finalAttrs: {
   src = fetchFromGitHub {
     owner = "yeachan-heo";
     repo = "oh-my-claudecode";
-    rev = "v${finalAttrs.version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-YzMJSok+B1zKeKeDiBaiJLgEIrrCkzZHs06fXIcRGOw=";
   };
 

@@ -19,7 +19,7 @@ buildGoModule.override { go = go_1_26; } {
   src = fetchFromGitHub {
     owner = "router-for-me";
     repo = "CLIProxyAPI";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

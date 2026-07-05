@@ -139,7 +139,7 @@ python3.pkgs.buildPythonApplication rec {
   src = fetchFromGitHub {
     owner = "MinishLab";
     repo = "semble";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-o1Rb1rHvrE7IZ8fHQFxKIDryVe1FBTG1KxfNyibvPiM=";
   };
 

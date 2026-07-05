@@ -12,7 +12,7 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "get-vix";
     repo = "vix";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-z0Vd+HP4FFqzQgoqLhxd+yVdE6gHCQK1yli8nOwtI34=";
   };
 

@@ -14,7 +14,7 @@ buildNpmPackage rec {
   src = fetchFromGitHub {
     owner = "andrewyng";
     repo = "context-hub";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-BU6SIt5brANngEqVdquQEA6LZcCSH1PNLg5k2b94naM=";
   };
 

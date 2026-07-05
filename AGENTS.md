@@ -82,6 +82,12 @@ meta = with lib; {
 };
 ```
 
+### Pinning GitHub Sources by Tag
+
+Use `fetchFromGitHub`'s `tag = "v${version}"`, not `rev = "v${version}"`. `rev`
+fetches the ambiguous `archive/v${version}.tar.gz`, which errors when a repo has
+a branch and tag of the same name; `tag` uses `refs/tags/` and is hash-identical.
+
 The `changelog` attribute is **required** — our updater uses it to generate release notes. Use a version-specific URL matching the upstream tag format (e.g. `v${version}`, `${version}`, `rust-v${version}`). Fall back to `/releases` when tags are inconsistent. Verify the URL doesn't 404.
 
 ### Package Categories

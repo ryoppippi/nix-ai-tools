@@ -18,7 +18,7 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "MrLesk";
     repo = "Backlog.md";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

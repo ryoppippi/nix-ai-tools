@@ -19,7 +19,7 @@ in
   src = fetchFromGitHub {
     owner = "charmbracelet";
     repo = "crush";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

@@ -23,7 +23,7 @@ rustPlatform.buildRustPackage rec {
     # Upstream moved from block/goose to aaif-goose/goose.
     owner = "aaif-goose";
     repo = "goose";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit (versionData) hash;
   };
 

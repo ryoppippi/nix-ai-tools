@@ -19,7 +19,7 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "subsy";
     repo = "ralph-tui";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

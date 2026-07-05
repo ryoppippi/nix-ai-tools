@@ -13,7 +13,7 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "Dicklesworthstone";
     repo = "beads_viewer";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-FLJ/jXC04rXaELwwO8Ph8OWgA0IuDyUuJheH5xWQR58=";
   };
 

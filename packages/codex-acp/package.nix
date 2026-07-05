@@ -35,7 +35,7 @@ let
       fetchFromGitHub {
         owner = "zed-industries";
         repo = "codex-acp";
-        rev = "v${version}";
+        tag = "v${version}";
         inherit hash;
       };
 in

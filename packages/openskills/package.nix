@@ -13,7 +13,7 @@ buildNpmPackage (finalAttrs: {
   src = fetchFromGitHub {
     owner = "numman-ali";
     repo = "openskills";
-    rev = "v${finalAttrs.version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-rOrLi43J+w6XBRZYYwlDPl8RqU7Zhr45B9UyP6Xarj0=";
   };
 

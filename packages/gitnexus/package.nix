@@ -12,13 +12,13 @@ buildNpmPackage (finalAttrs: {
   npmDepsFetcherVersion = 2;
   forceGitDeps = true;
   pname = "gitnexus";
-  version = "1.6.8";
+  version = "1.6.9";
 
   src = fetchFromGitHub {
     owner = "abhigyanpatwari";
     repo = "GitNexus";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-2LvkIlQb4fk1DuI7sXjAm2xgNCQo/OX79A+Lw6xt6Js=";
+    hash = "sha256-lLO5+b/LqVDtOuJwqc4d6SmAtmKVfoHe7tXsYHRWrOw=";
   };
 
   sourceRoot = "source/gitnexus";
@@ -41,7 +41,7 @@ buildNpmPackage (finalAttrs: {
       --replace-fail "path.join('node_modules', '.bin', 'tsc')" "'tsc'"
   '';
 
-  npmDepsHash = "sha256-qTQTi3KYyPhZib4WWDE5S+tk8iY5rvtCQzBI2P4CA90=";
+  npmDepsHash = "sha256-kVRy2o6r/2C3HR8Mdcb7WJXqJBsjmYdnePPRRQ6zhIU=";
   makeCacheWritable = true;
 
   npmFlags = [ "--ignore-scripts" ];

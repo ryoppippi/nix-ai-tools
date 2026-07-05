@@ -24,7 +24,7 @@ let
   src = fetchFromGitHub {
     owner = "Yeachan-Heo";
     repo = "oh-my-codex";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

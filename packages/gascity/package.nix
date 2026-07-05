@@ -24,7 +24,7 @@ assert lib.versionAtLeast dolt.version "2.1.0";
   src = fetchFromGitHub {
     owner = "gastownhall";
     repo = "gascity";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-hmgDFEU2+KOgJmHKUxHW5Kp/c1F7+qMLHzWNWjDQgcY=";
   };
 

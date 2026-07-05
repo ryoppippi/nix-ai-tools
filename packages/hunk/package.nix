@@ -20,7 +20,7 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "modem-dev";
     repo = "hunk";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

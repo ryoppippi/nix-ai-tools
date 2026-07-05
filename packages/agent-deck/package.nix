@@ -15,7 +15,7 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "asheshgoplani";
     repo = "agent-deck";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-4LbeRiaFIn4Nx/VtDvhJAaeA7YB6i2VX8wZhJ75qw5k=";
   };
 

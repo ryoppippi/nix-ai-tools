@@ -15,7 +15,7 @@ buildGoModule.override { go = go-bin; } rec {
   src = fetchFromGitHub {
     owner = "quietpublish";
     repo = "mardi-gras";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-TL6m3WaNomZ4VYXbbACQb9YtGNYB81N2xBBLGH5vlRw=";
   };
 

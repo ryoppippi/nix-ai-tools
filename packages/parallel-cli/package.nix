@@ -22,7 +22,7 @@ let
     src = fetchFromGitHub {
       owner = "parallel-web";
       repo = "parallel-sdk-python";
-      rev = "v${version}";
+      tag = "v${version}";
       hash = parallelWebData.hash;
     };
 
@@ -62,7 +62,7 @@ let
     src = fetchFromGitHub {
       owner = "googleapis";
       repo = "python-bigquery-sqlalchemy";
-      rev = "v${version}";
+      tag = "v${version}";
       hash = sqlalchemyBigqueryData.hash;
     };
 
@@ -117,7 +117,7 @@ python3.pkgs.buildPythonApplication rec {
   src = fetchFromGitHub {
     owner = "parallel-web";
     repo = "parallel-web-tools";
-    rev = "v${version}";
+    tag = "v${version}";
     inherit hash;
   };
 

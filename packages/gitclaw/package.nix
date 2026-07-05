@@ -13,7 +13,7 @@ buildNpmPackage (finalAttrs: {
   src = fetchFromGitHub {
     owner = "open-gitagent";
     repo = "gitagent";
-    rev = "v${finalAttrs.version}";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-Dbi8zCTeSdR6HCqCPP5K/4cyHmNQes4ee9OFjbsdAoo=";
   };
 

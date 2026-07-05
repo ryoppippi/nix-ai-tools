@@ -21,7 +21,7 @@ buildGoModule rec {
   src = fetchFromGitHub {
     owner = "esengine";
     repo = "DeepSeek-Reasonix";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-trnEe0PJ6M9KZeJlv3cSeZb+HMMGtoxbA0gLSU1gl4c=";
   };
 

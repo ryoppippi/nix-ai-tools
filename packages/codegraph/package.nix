@@ -14,7 +14,7 @@ buildNpmPackage rec {
   src = fetchFromGitHub {
     owner = "colbymchenry";
     repo = "codegraph";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-JLyu6FG74R/3RwBFNhen3U9swA0AFyJh7q5obNA/ZpE=";
   };
 

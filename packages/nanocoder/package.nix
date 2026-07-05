@@ -15,7 +15,7 @@ buildNpmPackage rec {
   src = fetchFromGitHub {
     owner = "Nano-Collective";
     repo = "nanocoder";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-yQy+SBYvBB9x6EiriewQ1/SnHg7S3c395yNaTQdv2ic=";
   };
 

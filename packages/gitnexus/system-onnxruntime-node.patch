@@ -1,23 +1,23 @@
 diff --git gitnexus/src/core/embeddings/embedder.ts gitnexus/src/core/embeddings/embedder.ts
-index 3ec5f08..67ae5ef 100644
+index 800652a..b7d8dba 100644
 --- gitnexus/src/core/embeddings/embedder.ts
 +++ gitnexus/src/core/embeddings/embedder.ts
-@@ -29,6 +29,7 @@ import { resolveEmbeddingConfig } from './config.js';
+@@ -25,6 +25,7 @@ import { resolveEmbeddingConfig } from './config.js';
  import { applyHfEnvOverrides, isHfDownloadFailure, withHfDownloadRetry } from './hf-env.js';
  import { getLocalEmbeddingRuntimeBlocker } from './runtime-support.js';
  import { ensureOnnxRuntimeCommonResolvable } from './onnxruntime-common-resolver.js';
 +import { applyOnnxruntimeNodeBindingOverride } from './onnxruntime-node-loader.js';
- import { logger } from '../logger.js';
- 
- /**
-@@ -183,6 +184,7 @@ export const initEmbedder = async (
+ import {
+   ensureOnnxRuntimeNodeMatchesSystem,
+   isEffectiveCudaAvailable,
+@@ -107,6 +108,7 @@ export const initEmbedder = async (
        // Under pnpm-strict / `pnpm dlx`, transformers' phantom `onnxruntime-common`
        // import is unresolvable; register the fallback resolver first (#307).
        ensureOnnxRuntimeCommonResolvable();
 +      applyOnnxruntimeNodeBindingOverride();
-       const { pipeline, env } = await import('@huggingface/transformers');
- 
-       // Configure transformers.js environment
+       // Registered AFTER the common fallback so this hook resolves FIRST (Node
+       // runs the most-recently-registered hook first): on CUDA-13 hosts it
+       // redirects onnxruntime-node (and its version-matched onnxruntime-common)
 diff --git gitnexus/src/core/embeddings/onnxruntime-node-loader.ts gitnexus/src/core/embeddings/onnxruntime-node-loader.ts
 new file mode 100644
 index 0000000..252064f
@@ -78,7 +78,7 @@ index 0000000..252064f
 +  };
 +};
 diff --git gitnexus/src/mcp/core/embedder.ts gitnexus/src/mcp/core/embedder.ts
-index 4dd73f3..c10f73b 100644
+index f856446..f632fcd 100644
 --- gitnexus/src/mcp/core/embedder.ts
 +++ gitnexus/src/mcp/core/embedder.ts
 @@ -23,6 +23,7 @@ import {
@@ -86,14 +86,14 @@ index 4dd73f3..c10f73b 100644
  import { getLocalEmbeddingRuntimeBlocker } from '../../core/embeddings/runtime-support.js';
  import { ensureOnnxRuntimeCommonResolvable } from '../../core/embeddings/onnxruntime-common-resolver.js';
 +import { applyOnnxruntimeNodeBindingOverride } from '../../core/embeddings/onnxruntime-node-loader.js';
+ import { ensureOnnxRuntimeNodeMatchesSystem } from '../../core/embeddings/onnxruntime-node-resolver.js';
  import { silenceStdout, restoreStdout, realStderrWrite } from '../../core/lbug/pool-adapter.js';
  
- import { logger } from '../../core/logger.js';
-@@ -69,6 +70,7 @@ export const initEmbedder = async (): Promise<FeatureExtractionPipeline> => {
+@@ -70,6 +71,7 @@ export const initEmbedder = async (): Promise<FeatureExtractionPipeline> => {
        // Under pnpm-strict / `pnpm dlx`, transformers' phantom `onnxruntime-common`
        // import is unresolvable; register the fallback resolver first (#307).
        ensureOnnxRuntimeCommonResolvable();
 +      applyOnnxruntimeNodeBindingOverride();
-       const { pipeline, env } = await import('@huggingface/transformers');
- 
-       env.allowLocalModels = false;
+       // Registered AFTER the common fallback so this hook resolves FIRST (Node
+       // runs the most-recently-registered hook first): on CUDA-13 hosts it
+       // redirects onnxruntime-node to the system-matched build before

@@ -12,7 +12,7 @@ in
   src = pkgs.fetchFromGitHub {
     owner = "dolthub";
     repo = "dolt";
-    rev = "v${version}";
+    tag = "v${version}";
     hash = "sha256-svBAmp/gPHSa6HXmqiFFB31sbaQa6s3HIW1tti8G1pA=";
   };
   vendorHash = "sha256-tBvNKDBv86pGBhzPc9tGDVwR1tB/HmUMn2VH42B6QRc=";
