@@ -1,14 +1,15 @@
 {
   fetchurl,
   lib,
+  autoPatchelfHook,
   makeWrapper,
-  patchelf,
   stdenvNoCC,
   bintools,
   copyDesktopItems,
   makeDesktopItem,
 
-  # Linked dynamic libraries.
+  # Directly linked (DT_NEEDED); autoPatchelfHook resolves these from
+  # buildInputs and fails the build if any are missing.
   alsa-lib,
   at-spi2-atk,
   at-spi2-core,
@@ -21,7 +22,6 @@
   glib,
   gtk3,
   libdrm,
-  libglvnd,
   libX11,
   libxcb,
   libXcomposite,
@@ -34,19 +34,26 @@
   nspr,
   nss,
   pango,
-  pipewire,
-  wayland,
 
   # Provides libudev, which the main binary links directly. The libs-only
   # build avoids pulling the whole systemd closure.
   systemdLibs,
 
-  # Loaded at runtime via dlopen.
+  # Loaded at runtime via dlopen. Nothing lists these in DT_NEEDED, so they go
+  # in runtimeDependencies to land on the RUNPATH regardless.
+  libglvnd,
   libsecret,
   libnotify,
   libpulseaudio,
   libayatana-appindicator,
+  libXcursor,
+  pipewire,
+  wayland,
   xdg-utils,
+
+  # Needed by the bundled virtiofsd, which backs Cowork's virtual machines.
+  libcap_ng,
+  libseccomp,
 
   # Needed for XDG_ICON_DIRS and GSETTINGS_SCHEMAS_PATH.
   adwaita-icon-theme,
@@ -64,41 +71,6 @@ let
   inherit (versionData) version urls hashes;
 
   platform = stdenvNoCC.hostPlatform.system;
-
-  deps = [
-    alsa-lib
-    at-spi2-atk
-    at-spi2-core
-    atk
-    cairo
-    cups
-    dbus
-    expat
-    gcc-unwrapped.lib
-    glib
-    gtk3
-    libayatana-appindicator
-    libdrm
-    libglvnd
-    libgbm
-    libnotify
-    libpulseaudio
-    libsecret
-    libX11
-    libxcb
-    libXcomposite
-    libXdamage
-    libXext
-    libXfixes
-    libxkbcommon
-    libXrandr
-    nspr
-    nss
-    pango
-    pipewire
-    systemdLibs
-    wayland
-  ];
 
   # x-scheme-handler/claude registers the OAuth sign-in handler.
   desktopItem = makeDesktopItem {
@@ -169,16 +141,54 @@ stdenvNoCC.mkDerivation {
   };
 
   nativeBuildInputs = [
+    autoPatchelfHook
     copyDesktopItems
     makeWrapper
-    patchelf
   ];
 
   buildInputs = [
     adwaita-icon-theme
+    alsa-lib
+    at-spi2-atk
+    at-spi2-core
+    atk
+    cairo
+    cups
+    dbus
+    expat
+    gcc-unwrapped.lib
     glib
     gsettings-desktop-schemas
     gtk3
+    libcap_ng
+    libdrm
+    libgbm
+    libseccomp
+    libX11
+    libxcb
+    libXcomposite
+    libXcursor
+    libXdamage
+    libXext
+    libXfixes
+    libXrandr
+    libxkbcommon
+    nspr
+    nss
+    pango
+    systemdLibs
+  ];
+
+  # dlopen()ed at runtime, so autoPatchelfHook cannot discover them from
+  # DT_NEEDED; list them here to force them onto every payload's RUNPATH.
+  runtimeDependencies = [
+    libayatana-appindicator
+    libglvnd
+    libnotify
+    libpulseaudio
+    libsecret
+    pipewire
+    wayland
   ];
 
   desktopItems = [ desktopItem ];
@@ -190,8 +200,6 @@ stdenvNoCC.mkDerivation {
     runHook postUnpack
   '';
 
-  rpath = lib.makeLibraryPath deps;
-
   installPhase = ''
     runHook preInstall
 
@@ -202,19 +210,11 @@ stdenvNoCC.mkDerivation {
     cp -a usr/share/icons $out/share/icons
     cp -a usr/share/doc $out/share/doc
 
-    # Include the app dir so ANGLE and the bundled GL/Vulkan libs find each
-    # other and the system libGL.
-    app_rpath="$rpath:$out/lib/claude-desktop"
-
-    # Patch every dynamic ELF in the app tree; tolerate failures on the
-    # statically linked cowork-linux-helper and the smol-bin.x64.img image.
-    while IFS= read -r -d "" elf; do
-      patchelf --set-interpreter ${bintools.dynamicLinker} "$elf" 2>/dev/null || true
-      patchelf --set-rpath "$app_rpath" "$elf" 2>/dev/null || true
-    done < <(find $out/lib/claude-desktop -type f \( -name "*.so" -o -name "*.so.*" -o -name "*.node" -o -executable \) -print0)
-
+    # autoPatchelfHook sets the interpreter and RUNPATHs. The wrapper only adds
+    # the app dir (so the bundled GL/Vulkan libs find each other), xdg-utils on
+    # PATH, and the icon/schema data dirs.
     makeWrapper "$out/lib/claude-desktop/claude-desktop" "$out/bin/claude-desktop" \
-      --prefix LD_LIBRARY_PATH : "$app_rpath" \
+      --prefix LD_LIBRARY_PATH : "$out/lib/claude-desktop" \
       --suffix PATH : "${lib.makeBinPath [ xdg-utils ]}" \
       --prefix XDG_DATA_DIRS : "$XDG_ICON_DIRS:$GSETTINGS_SCHEMAS_PATH" \
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}" \
