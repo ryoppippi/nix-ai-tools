@@ -216,9 +216,13 @@ stdenv.mkDerivation {
     echo "Generating docs index..."
     bun packages/coding-agent/scripts/generate-docs-index.ts --generate
 
-    # Generate the embedded stats dashboard client bundle
+    # Generate the embedded stats dashboard client bundle. Bun.Archive.write
+    # stamps each tar header with the current time, so normalize the archive
+    # afterwards to keep the compiled binary reproducible (issue #6534).
     echo "Generating embedded stats dashboard..."
     bun --cwd packages/stats scripts/generate-client-bundle.ts --generate
+    bun ${./normalize-embedded-client.ts} \
+      packages/stats/src/embedded-client.generated.txt
 
     # Generate the embedded HTML-export tool-views bundle (coding-agent prepack
     # step): export/html/index.ts text-imports ./tool-views.generated.js, which
