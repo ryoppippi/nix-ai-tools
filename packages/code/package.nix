@@ -11,13 +11,13 @@
 }:
 
 let
-  version = "0.6.142";
+  version = "0.6.143";
 
   src = fetchFromGitHub {
     owner = "just-every";
     repo = "code";
     tag = "v${version}";
-    hash = "sha256-bTFO6TnRyHpe9BSt0yX4DrTBRfdvrZ+rCHkHq3QIArA=";
+    hash = "sha256-ZU7WvM9yKs1wyMeIhfKK/ql9w6oITBVx9usobwuxuXQ=";
   };
 in
 rustPlatform.buildRustPackage {
