@@ -860,6 +860,16 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
+<summary><strong>jscpd</strong> - Copy/paste detector for programming source code</summary>
+
+- **Source**: source
+- **License**: MIT
+- **Homepage**: https://jscpd.dev
+- **Usage**: `nix run github:numtide/llm-agents.nix#jscpd -- --help`
+- **Nix**: [packages/jscpd/package.nix](packages/jscpd/package.nix)
+
+</details>
+<details>
 <summary><strong>plannotator</strong> - Interactive plan and code review tool for AI coding agents</summary>
 
 - **Source**: source
