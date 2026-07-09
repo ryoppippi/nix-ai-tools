@@ -75,6 +75,8 @@ rustPlatform.buildRustPackage (
     cargoBuildFlags = [
       "--package"
       "codex-cli"
+      "--package"
+      "codex-code-mode-host"
     ];
 
     nativeBuildInputs = [
