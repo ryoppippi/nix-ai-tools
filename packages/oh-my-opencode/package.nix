@@ -17,6 +17,15 @@ let
     hash
     ;
 
+  # koffi ships prebuilt .node addons for every platform it supports;
+  # keep only the one matching the host so autoPatchelf does not try to
+  # resolve OpenBSD/FreeBSD/musl/foreign-arch libc symbols.
+  koffiPlatform =
+    if stdenv.hostPlatform.isDarwin then
+      "darwin_${if stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}"
+    else
+      "linux_${if stdenv.hostPlatform.isAarch64 then "arm64" else "x64"}";
+
   upstream = fetchFromGitHub {
     owner = "code-yeongyu";
     repo = "oh-my-openagent";
@@ -117,6 +126,12 @@ stdenv.mkDerivation {
     # aren't needed at runtime — the CLI bundle is self-contained)
     find $out/lib/oh-my-opencode/node_modules/@oh-my-opencode -xtype l -delete 2>/dev/null || true
     rmdir $out/lib/oh-my-opencode/node_modules/@oh-my-opencode 2>/dev/null || true
+
+    # Drop koffi prebuilds for foreign platforms (openbsd, freebsd, musl,
+    # other CPU arches) that would otherwise fail autoPatchelf.
+    for dir in $out/lib/oh-my-opencode/node_modules/.bun/koffi@*/node_modules/koffi/build/koffi/*; do
+      [ "$(basename "$dir")" = "${koffiPlatform}" ] || rm -rf "$dir"
+    done
 
     makeWrapper ${bun}/bin/bun $out/bin/oh-my-opencode \
       --add-flags "run $out/lib/oh-my-opencode/dist/cli/index.js"
