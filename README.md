@@ -530,14 +530,13 @@ Nix packages for AI coding agents and development tools. Automatically updated d
 
 </details>
 <details>
-<summary><strong>codex-acp</strong> - An ACP-compatible coding agent powered by Codex</summary>
+<summary><strong>codex-acp</strong> - ACP-compatible coding agent powered by the Codex App Server</summary>
 
 - **Source**: source
 - **License**: Apache-2.0
-- **Homepage**: https://github.com/zed-industries/codex-acp
+- **Homepage**: https://github.com/agentclientprotocol/codex-acp
 - **Usage**: `nix run github:numtide/llm-agents.nix#codex-acp -- --help`
 - **Nix**: [packages/codex-acp/package.nix](packages/codex-acp/package.nix)
-- **Documentation**: See [packages/codex-acp/README.md](packages/codex-acp/README.md) for detailed usage
 
 </details>
 
