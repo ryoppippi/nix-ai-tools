@@ -45,17 +45,6 @@ let
     platformsBySystem.${stdenv.hostPlatform.system}
       or (throw "Unsupported platform for omp: ${stdenv.hostPlatform.system}");
   rustTarget = stdenv.hostPlatform.rust.rustcTarget;
-  rustTargetEnv = "CARGO_TARGET_${
-    lib.toUpper (builtins.replaceStrings [ "-" ] [ "_" ] rustTarget)
-  }_RUSTFLAGS";
-  glimmerRustFlags = lib.concatStringsSep " " [
-    "-Clink-arg=-Wl,-u,tree_sitter_glimmer_external_scanner_create"
-    "-Clink-arg=-Wl,-u,tree_sitter_glimmer_external_scanner_destroy"
-    "-Clink-arg=-Wl,-u,tree_sitter_glimmer_external_scanner_reset"
-    "-Clink-arg=-Wl,-u,tree_sitter_glimmer_external_scanner_scan"
-    "-Clink-arg=-Wl,-u,tree_sitter_glimmer_external_scanner_serialize"
-    "-Clink-arg=-Wl,-u,tree_sitter_glimmer_external_scanner_deserialize"
-  ];
 
   src = fetchFromGitHub {
     owner = "can1357";
@@ -95,7 +84,6 @@ stdenv.mkDerivation {
   # RUSTC_BOOTSTRAP=1 enables nightly features on stable rustc.
   env = {
     RUSTC_BOOTSTRAP = 1;
-    ${rustTargetEnv} = glimmerRustFlags;
   };
 
   bunDeps = bun2nix.fetchBunDeps {
@@ -230,21 +218,18 @@ stdenv.mkDerivation {
     echo "Generating embedded HTML-export tool-views..."
     bun --cwd packages/collab-web scripts/build-tool-views.ts
 
-    # Compile the standalone binary. Since v15.11.0 workers re-enter via
-    # Bun.main, so no separate worker entrypoints are needed.
+    # Since v16.4.6 mupdf is bundled into the binary and its wasm blob is
+    # embedded via a generated helper (upstream gen:mupdf); --external mupdf
+    # no longer works because the compiled bunfs cannot resolve it.
+    echo "Embedding mupdf wasm..."
+    bun packages/coding-agent/scripts/embed-mupdf-wasm.ts --generate
+
+    # Compile the standalone binary. Since v16.4.6 the binary needs the
+    # in-memory omp-legacy-pi-modules virtual module, which only the
+    # Bun.build() plugin from upstream's compile-binary.ts can provide, so
+    # drive that helper instead of `bun build --compile`.
     echo "Compiling standalone binary..."
-    bun build --compile \
-      --no-compile-autoload-bunfig \
-      --no-compile-autoload-dotenv \
-      --no-compile-autoload-tsconfig \
-      --no-compile-autoload-package-json \
-      --keep-names \
-      --define 'process.env.PI_COMPILED="true"' \
-      --external mupdf \
-      --target="${platform.bunTarget}" \
-      --root . \
-      ./packages/coding-agent/src/cli.ts \
-      --outfile dist/omp
+    (cd packages/coding-agent && bun ${./compile-standalone.ts} "${platform.bunTarget}")
 
     runHook postBuild
   '';
