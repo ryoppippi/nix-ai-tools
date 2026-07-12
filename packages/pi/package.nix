@@ -1,6 +1,7 @@
 {
   lib,
   buildNpmPackage,
+  bun,
   fetchurl,
   fd,
   ripgrep,
@@ -12,6 +13,7 @@
 let
   versionData = lib.importJSON ./hashes.json;
   version = versionData.version;
+  packageRoot = "$out/lib/node_modules/@earendil-works/pi-coding-agent";
 
   # Create a source with package-lock.json included
   srcWithLock = runCommand "pi-src-with-lock" { } ''
@@ -39,16 +41,27 @@ buildNpmPackage {
   # The package from npm is already built
   dontNpmBuild = true;
 
+  # Run upstream's Bun entry point with Bun; keeps Node out of the closure
+  # and adds aarch64-linux support.
   postInstall = ''
-    wrapProgram $out/bin/pi \
+    rm -f "$out/bin/pi"
+
+    makeWrapper ${lib.getExe bun} "$out/bin/pi" \
+      --add-flags "${packageRoot}/dist/bun/cli.js" \
       --prefix PATH : ${
         lib.makeBinPath [
           fd
           ripgrep
         ]
       } \
+      --set PI_PACKAGE_DIR ${packageRoot} \
       --set PI_SKIP_VERSION_CHECK 1 \
       --set PI_TELEMETRY 0
+  '';
+
+  # The npm install hook patches shebangs to Node; point them at Bun instead.
+  postFixup = ''
+    grep -rlE '^#!.*/node$' "$out/lib" | xargs -r sed -i '1s|.*|#!${lib.getExe bun}|'
   '';
 
   doInstallCheck = true;
@@ -66,7 +79,7 @@ buildNpmPackage {
     license = lib.licenses.mit;
     sourceProvenance = with lib.sourceTypes; [ binaryBytecode ];
     maintainers = with lib.maintainers; [ aos ];
-    platforms = lib.platforms.all;
+    platforms = bun.meta.platforms;
     mainProgram = "pi";
   };
 }
