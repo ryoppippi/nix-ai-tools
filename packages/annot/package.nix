@@ -25,7 +25,7 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "annot";
-  version = "0.17.0";
+  version = "0.18.0";
 
   __structuredAttrs = true;
   strictDeps = true;
@@ -34,14 +34,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "denolehov";
     repo = "annot";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-nnryODRspvZMiScCUoX/ErGSzFgh35zHX/i2gc90dfk=";
+    hash = "sha256-PrJTCVHkPjblXypyvCsLFkpx48z+meJNWewkod0e6Lk=";
   };
 
   pnpmDeps = fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
     pnpm = pnpm_10;
     fetcherVersion = 3;
-    hash = "sha256-rMDkGVgZZan8yyIlTr9cyNhnqHpYjObyFktCgs++k20=";
+    hash = "sha256-OHsq/So4YhonxSnT4fByZnlPnpYvjcf0UuHHgBGVIf8=";
   };
 
   postPatch = ''
@@ -51,7 +51,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   cargoRoot = "src-tauri";
   buildAndTestSubdir = finalAttrs.cargoRoot;
 
-  cargoHash = "sha256-aG+gC4AK/swUBrYsIIlyP0E7Lezo41YStLKee/7FgYQ=";
+  cargoHash = "sha256-e5kU6b+dq9fPMP6uj5Y42qeKz5P/Sufuci0bU5J/SiU=";
 
   nativeBuildInputs = [
     jq
