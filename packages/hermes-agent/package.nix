@@ -318,20 +318,14 @@ python3.pkgs.buildPythonApplication {
     "--set"
     "HERMES_NODE"
     "${nodejs}/bin/node"
-    # Bundled skills live outside the Python package tree (setup.py
-    # data_files). setuptools drops setup.py data_files when pyproject.toml
-    # declares [tool.setuptools.data-files], so postInstall copies them
-    # manually and the wrapper points hermes at the installed copy.
+    # Skills are copied to $out/share/hermes in postInstall; point hermes at them.
     "--set"
     "HERMES_BUNDLED_SKILLS"
     "${placeholder "out"}/share/hermes/skills"
     "--set"
     "HERMES_OPTIONAL_SKILLS"
     "${placeholder "out"}/share/hermes/optional-skills"
-    # Mark as package-manager-managed so `hermes update` refuses with the
-    # NixOS-specific error (is_managed() in hermes_cli/config.py reads
-    # HERMES_MANAGED and maps "nixos" → "NixOS"). Prevents the in-place
-    # git-pull updater from clobbering the Nix-managed store path.
+    # Prevent `hermes update` from trying to modify the Nix store.
     "--set"
     "HERMES_MANAGED"
     "nixos"
@@ -346,12 +340,8 @@ python3.pkgs.buildPythonApplication {
     "${nodejs}/bin"
   ];
 
-  # setup.py declares skills/ and optional-skills/ as data_files, but
-  # pyproject.toml's [tool.setuptools.data-files] takes precedence and
-  # silently drops them from the wheel. Copy the trees from source so
-  # get_bundled_skills_dir / get_optional_skills_dir (hermes_constants.py)
-  # resolve via the HERMES_BUNDLED_SKILLS / HERMES_OPTIONAL_SKILLS env vars
-  # set in makeWrapperArgs.
+  # Skills are shipped as setup.py data_files, which the wheel build drops;
+  # install them manually.
   postInstall = ''
     mkdir -p $out/share/hermes
     cp -r ${src}/skills $out/share/hermes/skills
