@@ -43,35 +43,39 @@ buildNpmPackage {
 
   nativeBuildInputs = [ bun ];
 
+  # copy-binary-assets reads ../../node_modules and src/ paths from upstream's
+  # monorepo layout; recreate it around the unpacked npm tarball.
+  postUnpack = ''
+    mkdir -p "$NIX_BUILD_TOP/monorepo/packages"
+    mv "$NIX_BUILD_TOP/$sourceRoot" "$NIX_BUILD_TOP/monorepo/packages/coding-agent"
+    ln -s packages/coding-agent/node_modules "$NIX_BUILD_TOP/monorepo/node_modules"
+    sourceRoot=monorepo/packages/coding-agent
+  '';
+
   # Compile a standalone binary like upstream's build:binary script. Running
   # dist/bun/cli.js directly with Bun breaks extension module aliasing (#6794).
-  postInstall = ''
-    pushd ${packageRoot}
-
+  # Runs before npmInstallHook so the shx dev dependency is still installed.
+  preInstall = ''
     # Upstream embeds the worker as ./src/utils/image-resize-worker.ts and
     # loads it by that path at runtime; the npm tarball only ships dist/.
-    mkdir -p src/utils
+    mkdir -p src/utils src/modes src/core
     echo 'import "../../dist/utils/image-resize-worker.js";' > src/utils/image-resize-worker.ts
+    ln -s ../../dist/modes/interactive src/modes/interactive
+    ln -s ../../dist/core/export-html src/core/export-html
 
-    bun build --compile ./dist/bun/cli.js ./src/utils/image-resize-worker.ts --outfile pi-binary
+    bun build --compile ./dist/bun/cli.js ./src/utils/image-resize-worker.ts --outfile dist/pi
+    npm run copy-binary-assets
+  '';
 
-    # Replicate upstream's copy-binary-assets layout next to the binary.
+  postInstall = ''
     pkgdir=$out/libexec/pi
-    mkdir -p "$pkgdir/theme" "$pkgdir/assets" "$pkgdir/export-html/vendor"
-    install -m755 pi-binary "$pkgdir/pi"
-    cp package.json README.md CHANGELOG.md "$pkgdir/"
-    cp -r docs examples "$pkgdir/"
-    cp dist/modes/interactive/theme/*.json "$pkgdir/theme/"
-    cp dist/modes/interactive/assets/*.png "$pkgdir/assets/"
-    cp dist/core/export-html/template.html dist/core/export-html/template.css dist/core/export-html/template.js "$pkgdir/export-html/"
-    cp dist/core/export-html/vendor/*.js "$pkgdir/export-html/vendor/"
-    cp node_modules/@silvia-odwyer/photon-node/photon_rs_bg.wasm "$pkgdir/"
 
-    popd
-
-    # The binary embeds all modules; drop the npm module tree.
+    # The binary embeds all modules; ship only upstream's binary dist layout.
     rm -rf "$out/lib" "$out/bin"
-    mkdir -p "$out/bin"
+    mkdir -p "$out/bin" "$out/libexec"
+    cp -r dist "$pkgdir"
+    # Keep patchShebangs from pulling Node into the closure via dist scripts.
+    find "$pkgdir" -name '*.js' -exec chmod -x {} +
 
     makeWrapper "$pkgdir/pi" "$out/bin/pi" \
       --prefix PATH : ${
