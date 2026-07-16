@@ -158,14 +158,14 @@ let
 in
 python.pkgs.buildPythonApplication rec {
   pname = "mistral-vibe";
-  version = "2.19.1";
+  version = "2.20.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "mistralai";
     repo = "mistral-vibe";
     tag = "v${version}";
-    hash = "sha256-+Ntt+uuxEFT4BuFmEAXo6M0tF9E9qrdZb0p3m0JjCao=";
+    hash = "sha256-Zaa5WuyLrEfzKohFnXmnqbmMXNUWxME13oJOvkLudPs=";
   };
 
   build-system = with python.pkgs; [
@@ -178,7 +178,7 @@ python.pkgs.buildPythonApplication rec {
   # pins so the nixpkgs-provided versions satisfy pypa build.
   postPatch = ''
     substituteInPlace pyproject.toml \
-      --replace-fail 'requires = ["hatchling==1.30.1", "hatch-vcs==0.5.0", "editables==0.6"]' \
+      --replace-fail 'requires = ["hatchling==1.31.0", "hatch-vcs==0.5.0", "editables==0.6"]' \
         'requires = ["hatchling", "hatch-vcs", "editables"]'
   '';
 
