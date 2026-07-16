@@ -1995,9 +1995,9 @@
     url = "https://registry.npmjs.org/platform/-/platform-1.3.6.tgz";
     hash = "sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==";
   };
-  "postcss@8.5.17" = fetchurl {
-    url = "https://registry.npmjs.org/postcss/-/postcss-8.5.17.tgz";
-    hash = "sha512-J7EF+8X+CzRPaJPOv9Ck2wNWJvGnnl3PcNPAdGg6GTLjyVpyQ0yATMSXRFRV01BviT/9Gwuc3rjEyJbDJG9a4w==";
+  "postcss@8.5.18" = fetchurl {
+    url = "https://registry.npmjs.org/postcss/-/postcss-8.5.18.tgz";
+    hash = "sha512-xdB1oSLHbz1vRWgCDalrCqEFTWzFlhqFC5tIHLMOSUIjhm3XXQ1qrFy8S/ESr1JYRRXqM3c1QFiMZUJdUTqyMQ==";
   };
   "prettier@3.9.5" = fetchurl {
     url = "https://registry.npmjs.org/prettier/-/prettier-3.9.5.tgz";
