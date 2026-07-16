@@ -1,11 +1,11 @@
 {
-  "version": "1.21459.1",
+  "version": "1.21459.3",
   "urls": {
-    "x86_64-linux": "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.21459.1_amd64.deb",
-    "aarch64-linux": "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.21459.1_arm64.deb"
+    "x86_64-linux": "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.21459.3_amd64.deb",
+    "aarch64-linux": "https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.21459.3_arm64.deb"
   },
   "hashes": {
-    "x86_64-linux": "sha256-P4P3djz23nDYdVb8FYJ+/ggxezOblNwCjenG5Pb68uk=",
-    "aarch64-linux": "sha256-4FiRdxxUtStb7vJPQZnFExy/72as2vB5YDcHBk2Ll3c="
+    "x86_64-linux": "sha256-My0k7439p83WM+9iTvM1zrMatUtHHijXhavGAWrmqb4=",
+    "aarch64-linux": "sha256-mZTOAzMMnKzzwi+RpZlNNMm25duGJkQw+7fPdmRcPKU="
   }
 }
