@@ -8,13 +8,13 @@
 
 buildGoModule rec {
   pname = "td";
-  version = "0.51.0";
+  version = "0.51.2";
 
   src = fetchFromGitHub {
     owner = "marcus";
     repo = "td";
     tag = "v${version}";
-    hash = "sha256-tsBS3X2S3gVmeSlQzYYlBS0S18Ee/Ze9yj67bJghSRw=";
+    hash = "sha256-H138aRuFmbOoLK0Ty4bZrANaDaTnHyKWzTzaNpXN8Pw=";
   };
 
   vendorHash = "sha256-/IWBYL+WfLz7vDdUs//0KY8rb9mOv4S1jBXCZbYxJRo=";
