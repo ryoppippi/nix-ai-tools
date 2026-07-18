@@ -15,7 +15,6 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     calculate_platform_hashes,
     calculate_url_hash,
     fetch_github_latest_release,
@@ -23,9 +22,9 @@ from updater import (
     load_hashes,
     save_hashes,
     should_update,
+    update_dependency_hash,
 )
 from updater.hash import DUMMY_SHA256_HASH
-from updater.nix import NixCommandError
 
 HASHES_FILE = Path(__file__).parent / "hashes.json"
 
@@ -144,15 +143,7 @@ def main() -> None:
     }
     save_hashes(HASHES_FILE, data)
 
-    try:
-        cargo_hash = calculate_dependency_hash(
-            ".#codex", "cargoHash", HASHES_FILE, data
-        )
-        data["cargoHash"] = cargo_hash
-        save_hashes(HASHES_FILE, data)
-    except (ValueError, NixCommandError) as e:
-        print(f"Error: {e}")
-        return
+    update_dependency_hash(".#codex", "cargoHash", HASHES_FILE, data)
 
     print(f"Updated to {latest}")
 

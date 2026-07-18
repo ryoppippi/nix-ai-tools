@@ -5,7 +5,7 @@
 
 Custom updater needed because oh-my-opencode uses bun2nix (bun.nix must be
 regenerated from upstream bun.lock) and fetches submodules, so the source
-hash is recovered from a failed build via calculate_dependency_hash
+hash is recovered from a failed build via update_dependency_hash
 instead of nix-prefetch-url.
 """
 
@@ -15,13 +15,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     clone_and_generate_bun_nix,
     fetch_github_latest_release,
     load_hashes,
     save_hashes,
     should_update,
     strip_workspace_entries,
+    update_dependency_hash,
 )
 
 PKG_DIR = Path(__file__).parent
@@ -67,15 +67,7 @@ def main() -> None:
     # Step 3: Source hash. nix-prefetch-url can't be used because the
     # GitHub tarball excludes submodule contents.
     print("Calculating source hash (with submodules)...")
-    src_hash = calculate_dependency_hash(
-        package_attr=".#oh-my-opencode",
-        hash_key="hash",
-        hashes_file=HASHES_FILE,
-        data=data,
-    )
-    data["hash"] = src_hash
-    save_hashes(HASHES_FILE, data)
-    print(f"  source hash: {src_hash}")
+    update_dependency_hash(".#oh-my-opencode", "hash", HASHES_FILE, data)
 
     print(f"Updated oh-my-opencode to {latest}")
 

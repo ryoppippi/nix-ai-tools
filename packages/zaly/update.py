@@ -9,16 +9,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     calculate_url_hash,
     extract_or_generate_lockfile,
     fetch_npm_version,
     load_hashes,
     save_hashes,
     should_update,
+    update_dependency_hash,
 )
 from updater.hash import DUMMY_SHA256_HASH
-from updater.nix import NixCommandError
 
 SCRIPT_DIR = Path(__file__).parent
 HASHES_FILE = SCRIPT_DIR / "hashes.json"
@@ -60,15 +59,7 @@ def main() -> None:
     save_hashes(HASHES_FILE, data)
 
     # Calculate npmDepsHash
-    try:
-        npm_deps_hash = calculate_dependency_hash(
-            ".#zaly", "npmDepsHash", HASHES_FILE, data
-        )
-        data["npmDepsHash"] = npm_deps_hash
-        save_hashes(HASHES_FILE, data)
-    except (ValueError, NixCommandError) as e:
-        print(f"Error: {e}")
-        return
+    update_dependency_hash(".#zaly", "npmDepsHash", HASHES_FILE, data)
 
     print(f"Updated to {latest}")
 

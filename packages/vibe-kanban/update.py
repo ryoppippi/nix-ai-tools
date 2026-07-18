@@ -16,15 +16,14 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     calculate_url_hash,
     fetch_json,
     load_hashes,
     save_hashes,
     should_update,
+    update_dependency_hash,
 )
 from updater.hash import DUMMY_SHA256_HASH
-from updater.nix import NixCommandError
 
 HASHES_FILE = Path(__file__).parent / "hashes.json"
 OWNER = "BloopAI"
@@ -68,17 +67,9 @@ def main() -> None:
     save_hashes(HASHES_FILE, new_data)
 
     # cargoHash and npmDepsHash both fall out of FOD build failures, so
-    # let calculate_dependency_hash trigger them sequentially.
-    try:
-        for key in ("cargoHash", "npmDepsHash"):
-            print(f"Calculating {key}...")
-            new_data[key] = calculate_dependency_hash(
-                ".#vibe-kanban", key, HASHES_FILE, new_data
-            )
-            save_hashes(HASHES_FILE, new_data)
-    except (ValueError, NixCommandError) as e:
-        print(f"Error: {e}")
-        sys.exit(1)
+    # trigger them sequentially.
+    for key in ("cargoHash", "npmDepsHash"):
+        update_dependency_hash(".#vibe-kanban", key, HASHES_FILE, new_data)
 
     print(f"Updated to {latest} (tag {tag})")
 

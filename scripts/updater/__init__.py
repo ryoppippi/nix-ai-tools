@@ -12,7 +12,7 @@ from .bun import (
 )
 
 # Dependency hash calculation
-from .deps import calculate_dependency_hash
+from .deps import calculate_dependency_hash, update_dependency_hash
 
 # Hash utilities
 from .hash import calculate_url_hash
@@ -63,4 +63,5 @@ __all__ = [
     "save_hashes",
     "should_update",
     "strip_workspace_entries",
+    "update_dependency_hash",
 ]

@@ -61,3 +61,32 @@ def calculate_dependency_hash(
             msg = f"Could not extract hash from build error:\n{e.args[0]}"
             raise ValueError(msg) from e
         return dep_hash
+
+
+def update_dependency_hash(
+    package_attr: str,
+    hash_key: str,
+    hashes_file: Path,
+    data: dict[str, Any],
+) -> None:
+    """Calculate a dependency hash and persist it to the hashes file.
+
+    Wraps calculate_dependency_hash so every updater fails the same way:
+    on error the process exits non-zero, which stops CI from committing a
+    placeholder hash and opening a broken update PR.
+
+    Args:
+        package_attr: Nix package attribute (e.g., ".#codex")
+        hash_key: Key in data dict for the hash (e.g., "cargoHash")
+        hashes_file: Path to hashes.json file
+        data: Dictionary containing package data (updated in place)
+
+    """
+    try:
+        data[hash_key] = calculate_dependency_hash(
+            package_attr, hash_key, hashes_file, data
+        )
+        save_hashes(hashes_file, data)
+    except (ValueError, NixCommandError) as e:
+        msg = f"Error calculating {hash_key} for {package_attr}: {e}"
+        raise SystemExit(msg) from e

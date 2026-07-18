@@ -17,12 +17,11 @@ from typing import Any, cast
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     fetch_json,
     fetch_npm_version,
     load_hashes,
-    save_hashes,
     should_update,
+    update_dependency_hash,
 )
 from updater.nix import nix_command
 
@@ -97,13 +96,7 @@ def main() -> None:
         "pnpmDepsHash": data.get("pnpmDepsHash", ""),
     }
 
-    new_data["pnpmDepsHash"] = calculate_dependency_hash(
-        ".#happy-coder",
-        "pnpmDepsHash",
-        HASHES_FILE,
-        new_data,
-    )
-    save_hashes(HASHES_FILE, new_data)
+    update_dependency_hash(".#happy-coder", "pnpmDepsHash", HASHES_FILE, new_data)
     print(f"Updated to {latest}")
 
 

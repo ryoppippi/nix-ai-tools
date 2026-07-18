@@ -26,16 +26,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     calculate_url_hash,
     fetch_github_latest_release,
     load_hashes,
     regenerate_bun_nix,
     save_hashes,
     should_update,
+    update_dependency_hash,
 )
 from updater.hash import DUMMY_SHA256_HASH
-from updater.nix import NixCommandError
 
 PKG_DIR = Path(__file__).parent
 FLAKE_ROOT = PKG_DIR.parent.parent
@@ -176,13 +175,7 @@ def main() -> None:
 
     # Step 3: Calculate cargoHash
     print("Calculating cargoHash...")
-    try:
-        cargo_hash = calculate_dependency_hash(".#icm", "cargoHash", HASHES_FILE, data)
-        data["cargoHash"] = cargo_hash
-        save_hashes(HASHES_FILE, data)
-    except (ValueError, NixCommandError) as e:
-        print(f"Error: {e}")
-        return
+    update_dependency_hash(".#icm", "cargoHash", HASHES_FILE, data)
 
     print(f"Updated icm to {latest}")
 

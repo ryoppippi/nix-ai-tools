@@ -14,7 +14,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     calculate_url_hash,
     clone_and_generate_bun_nix,
     fetch_github_latest_release,
@@ -22,9 +21,9 @@ from updater import (
     save_hashes,
     should_update,
     strip_workspace_entries,
+    update_dependency_hash,
 )
 from updater.hash import DUMMY_SHA256_HASH
-from updater.nix import NixCommandError
 
 PKG_DIR = Path(__file__).parent
 FLAKE_ROOT = PKG_DIR.parent.parent
@@ -73,13 +72,7 @@ def main() -> None:
     strip_workspace_entries(BUN_NIX, "@oh-my-pi", FLAKE_ROOT)
 
     # Step 3: Calculate cargoHash
-    try:
-        cargo_hash = calculate_dependency_hash(".#omp", "cargoHash", HASHES_FILE, data)
-        data["cargoHash"] = cargo_hash
-        save_hashes(HASHES_FILE, data)
-    except (ValueError, NixCommandError) as e:
-        print(f"Error: {e}")
-        return
+    update_dependency_hash(".#omp", "cargoHash", HASHES_FILE, data)
 
     print(f"Updated omp to {latest}")
 

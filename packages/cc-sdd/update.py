@@ -9,14 +9,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     fetch_github_latest_release,
     load_hashes,
-    save_hashes,
     should_update,
+    update_dependency_hash,
 )
 from updater.hash import DUMMY_SHA256_HASH
-from updater.nix import NixCommandError, nix_prefetch_url
+from updater.nix import nix_prefetch_url
 
 SCRIPT_DIR = Path(__file__).parent
 HASHES_FILE = SCRIPT_DIR / "hashes.json"
@@ -51,15 +50,7 @@ def main() -> None:
     }
 
     # Calculate npmDepsHash
-    try:
-        npm_deps_hash = calculate_dependency_hash(
-            ".#cc-sdd", "npmDepsHash", HASHES_FILE, new_data
-        )
-        new_data["npmDepsHash"] = npm_deps_hash
-        save_hashes(HASHES_FILE, new_data)
-    except (ValueError, NixCommandError) as e:
-        print(f"Error: {e}")
-        return
+    update_dependency_hash(".#cc-sdd", "npmDepsHash", HASHES_FILE, new_data)
 
     print(f"Updated to {latest}")
 

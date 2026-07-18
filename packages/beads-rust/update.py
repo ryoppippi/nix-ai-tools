@@ -16,13 +16,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 
 from updater import (
-    calculate_dependency_hash,
     calculate_url_hash,
     fetch_github_latest_release,
     fetch_json,
     load_hashes,
     save_hashes,
     should_update,
+    update_dependency_hash,
 )
 
 HASHES_FILE = Path(__file__).parent / "hashes.json"
@@ -92,12 +92,8 @@ def main() -> None:
     save_hashes(HASHES_FILE, data)
 
     # Recalculate cargoHash via dummy-hash build
-    cargo_hash = calculate_dependency_hash(
-        ".#beads-rust", "cargoHash", HASHES_FILE, data
-    )
-    data["cargoHash"] = cargo_hash
+    update_dependency_hash(".#beads-rust", "cargoHash", HASHES_FILE, data)
 
-    save_hashes(HASHES_FILE, data)
     print(f"Updated beads-rust to {latest}")
 
 
