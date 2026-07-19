@@ -4,7 +4,7 @@
   stdenv,
   fetchzip,
   makeWrapper,
-  autoPatchelfHook,
+  formatelf,
   libx11,
   libxext,
   libxi,
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    autoPatchelfHook
+    formatelf
     makeWrapper
   ];
 

@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchurl,
-  autoPatchelfHook,
+  formatelf,
   gcc-unwrapped,
   dpkg,
   makeWrapper,
@@ -67,7 +67,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs =
     lib.optionals stdenv.hostPlatform.isLinux [
-      autoPatchelfHook
+      formatelf
       dpkg
       copyDesktopItems
     ]

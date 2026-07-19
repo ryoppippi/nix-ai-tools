@@ -5,7 +5,7 @@
   fetchurl,
   unzip,
   makeWrapper,
-  autoPatchelfHook,
+  formatelf,
   versionCheckHook,
   zlib,
 }:
@@ -37,7 +37,7 @@ stdenv.mkDerivation {
     unzip
     makeWrapper
   ]
-  ++ lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+  ++ lib.optionals stdenv.hostPlatform.isLinux [ formatelf ];
 
   # The bundled JRE contains modules for AWT/sound/etc that we don't need for
   # the CLI; mark their deps optional so autoPatchelfHook doesn't fail.

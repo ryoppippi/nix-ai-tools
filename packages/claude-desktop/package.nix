@@ -2,7 +2,7 @@
   fetchurl,
   lib,
   flake,
-  autoPatchelfHook,
+  formatelf,
   makeWrapper,
   stdenvNoCC,
   bintools,
@@ -142,7 +142,7 @@ stdenvNoCC.mkDerivation {
   };
 
   nativeBuildInputs = [
-    autoPatchelfHook
+    formatelf
     copyDesktopItems
     makeWrapper
   ];

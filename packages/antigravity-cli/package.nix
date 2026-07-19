@@ -3,7 +3,7 @@
   flake,
   stdenv,
   fetchurl,
-  autoPatchelfHook,
+  formatelf,
   versionCheckHook,
   versionCheckHomeHook,
 }:
@@ -23,7 +23,7 @@ stdenv.mkDerivation {
     hash = hashes.${platform} or (throw "Unsupported system: ${platform}");
   };
 
-  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ formatelf ];
 
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
     (lib.getLib stdenv.cc.cc)
