@@ -9,8 +9,8 @@
 #
 # The guard fires for every consumption path that swaps out nixpkgs
 # (overlays.shared-nixpkgs, `inputs.llm-agents.inputs.nixpkgs.follows`, direct
-# callPackage), because perSystem.self is built against whatever `pkgs` is in
-# effect.
+# callPackage), because the package scope is built against whatever `pkgs` is
+# in effect.
 let
   inherit (pkgs) lib;
   hasFetcherVersion = (lib.functionArgs pkgs.fetchNpmDeps) ? fetcherVersion;
@@ -29,7 +29,7 @@ let
 in
 # A real (empty) derivation so blueprint / buildbot can enumerate and "build"
 # it, plus a __functor that forwards to the actual builder so
-# `perSystem.self.buildNpmPackage { … }` works in package.nix.
+# `buildNpmPackage { … }` works in package.nix.
 pkgs.emptyDirectory.overrideAttrs { name = "buildNpmPackage-guard"; }
 // {
   __functor =

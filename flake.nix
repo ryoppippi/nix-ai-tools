@@ -64,8 +64,8 @@
       # A package with only a package.nix is called from a scope containing
       # all in-repo packages plus shared helpers, so dependencies like
       # `wrapBuddy` or `platformSource` resolve by argument name. A package
-      # with a default.nix is called with { pkgs, perSystem, flake, inputs,
-      # system } as before.
+      # with a default.nix is called with { pkgs, packages, flake, inputs,
+      # system }.
       mkPackagesFor =
         pkgs:
         let
@@ -91,7 +91,7 @@
                 callWith {
                   inherit
                     pkgs
-                    perSystem
+                    packages
                     flake
                     inputs
                     system
@@ -104,10 +104,6 @@
 
           # Only the packages, without the scope plumbing and helpers.
           packages = lib.genAttrs packageNames (name: scope.${name});
-
-          perSystem = {
-            self = packages;
-          };
         in
         packages;
 
