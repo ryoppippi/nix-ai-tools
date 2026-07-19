@@ -2,6 +2,7 @@
 
 import re
 from typing import cast
+from urllib.parse import quote
 
 from .http import fetch_json, fetch_text
 from .nix import run_command
@@ -29,11 +30,12 @@ def fetch_github_latest_release(owner: str, repo: str) -> str:
     return tag.lstrip("v")
 
 
-def fetch_npm_version(package: str) -> str:
-    """Fetch the latest version from npm registry.
+def fetch_npm_version(package: str, *, tag: str = "latest") -> str:
+    """Fetch the version associated with an npm dist-tag.
 
     Args:
         package: npm package name
+        tag: npm dist-tag
 
     Returns:
         Latest version
@@ -41,12 +43,13 @@ def fetch_npm_version(package: str) -> str:
     """
     # Try using npm command first
     try:
-        cmd = ["npm", "view", package, "version"]
+        package_spec = package if tag == "latest" else f"{package}@{tag}"
+        cmd = ["npm", "view", package_spec, "version"]
         result = run_command(cmd)
         return result.stdout.strip()
     except (FileNotFoundError, OSError):
         # npm command not available, fallback to registry API
-        url = f"https://registry.npmjs.org/{package}/latest"
+        url = f"https://registry.npmjs.org/{quote(package, safe='')}/{tag}"
         data = fetch_json(url)
         if not isinstance(data, dict):
             msg = f"Expected dict from npm registry, got {type(data)}"
