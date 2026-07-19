@@ -80,14 +80,14 @@ let
 in
 python3.pkgs.buildPythonApplication (finalAttrs: {
   pname = "apm";
-  version = "0.25.0";
+  version = "0.26.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "microsoft";
     repo = "apm";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-asORpRp5kx8tpWOupvTSHzjC6soMe2uONhQt/t6PWrw=";
+    hash = "sha256-nQ1TPthTUHMEIyThSCPTzIFiWm8YyToOktfcKpN5+T0=";
   };
 
   build-system = with python3.pkgs; [
@@ -109,6 +109,7 @@ python3.pkgs.buildPythonApplication (finalAttrs: {
     ruamel-yaml
     toml
     tomlkit
+    truststore
     watchdog
   ];
 
