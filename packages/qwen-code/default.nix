@@ -1,5 +1,4 @@
 { pkgs, perSystem }:
 pkgs.callPackage ./package.nix {
-  darwinOpenptyHook = pkgs.callPackage ../darwinOpenptyHook { };
-  inherit (perSystem.self) buildNpmPackage;
+  inherit (perSystem.self) buildNpmPackage darwinOpenptyHook;
 }
