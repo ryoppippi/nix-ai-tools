@@ -6,6 +6,7 @@
   fd,
   ripgrep,
   runCommand,
+  stdenv,
   versionCheckHook,
   versionCheckHomeHook,
 }:
@@ -13,6 +14,32 @@
 let
   versionData = lib.importJSON ./hashes.json;
   version = versionData.version;
+  linuxClipboardAbi = if stdenv.hostPlatform.isMusl then "musl" else "gnu";
+  platformsBySystem = {
+    aarch64-darwin = {
+      clipboardNativePackage = "clipboard-darwin-arm64";
+      clipboardNativeFile = "clipboard.darwin-arm64.node";
+      tuiNativeTarget = "darwin-arm64";
+    };
+    x86_64-darwin = {
+      clipboardNativePackage = "clipboard-darwin-x64";
+      clipboardNativeFile = "clipboard.darwin-x64.node";
+      tuiNativeTarget = "darwin-x64";
+    };
+    aarch64-linux = {
+      clipboardNativePackage = "clipboard-linux-arm64-${linuxClipboardAbi}";
+      clipboardNativeFile = "clipboard.linux-arm64-${linuxClipboardAbi}.node";
+      tuiNativeTarget = null;
+    };
+    x86_64-linux = {
+      clipboardNativePackage = "clipboard-linux-x64-${linuxClipboardAbi}";
+      clipboardNativeFile = "clipboard.linux-x64-${linuxClipboardAbi}.node";
+      tuiNativeTarget = null;
+    };
+  };
+  platform =
+    platformsBySystem.${stdenv.hostPlatform.system}
+      or (throw "Unsupported Pi platform: ${stdenv.hostPlatform.system}");
 
   # Create a source with package-lock.json included
   srcWithLock = runCommand "pi-src-with-lock" { } ''
@@ -64,6 +91,17 @@ buildNpmPackage {
     mkdir -p "$out/bin" "$pkgdir/theme" "$pkgdir/assets"
     cp dist/pi "$pkgdir/"
     cp package.json README.md CHANGELOG.md "$pkgdir/"
+    # Mirror scripts/build-binaries.sh: Bun cannot embed these runtime assets.
+    mkdir -p "$pkgdir/node_modules/@mariozechner"
+    cp -r node_modules/@mariozechner/clipboard "$pkgdir/node_modules/@mariozechner/"
+    cp -r node_modules/@mariozechner/${platform.clipboardNativePackage} "$pkgdir/node_modules/@mariozechner/"
+    cp node_modules/@mariozechner/${platform.clipboardNativePackage}/${platform.clipboardNativeFile} \
+      "$pkgdir/node_modules/@mariozechner/clipboard/"
+    ${lib.optionalString (platform.tuiNativeTarget != null) ''
+      mkdir -p "$pkgdir/native/darwin/prebuilds/${platform.tuiNativeTarget}"
+      cp node_modules/@earendil-works/pi-tui/native/darwin/prebuilds/${platform.tuiNativeTarget}/darwin-modifiers.node \
+        "$pkgdir/native/darwin/prebuilds/${platform.tuiNativeTarget}/"
+    ''}
     cp node_modules/@silvia-odwyer/photon-node/photon_rs_bg.wasm "$pkgdir/"
     cp dist/modes/interactive/theme/*.json "$pkgdir/theme/"
     cp dist/modes/interactive/assets/* "$pkgdir/assets/"
@@ -90,6 +128,23 @@ buildNpmPackage {
     versionCheckHomeHook
   ];
 
+  postInstallCheck = ''
+    clipboardNative="$out/libexec/pi/node_modules/@mariozechner/clipboard/${platform.clipboardNativeFile}"
+    test -f "$clipboardNative"
+    ${bun}/bin/bun --eval '
+      const { createRequire } = require("module");
+      const { join } = require("path");
+      const { pathToFileURL } = require("url");
+      const requireFromExecutable = createRequire(pathToFileURL(join(process.argv[1], "package.json")).href);
+      requireFromExecutable("@mariozechner/clipboard");
+    ' "$out/libexec/pi"
+  ''
+  + lib.optionalString (platform.tuiNativeTarget != null) ''
+    nativeModifiers="$out/libexec/pi/native/darwin/prebuilds/${platform.tuiNativeTarget}/darwin-modifiers.node"
+    test -f "$nativeModifiers"
+    ${bun}/bin/bun --eval 'require(process.argv[1])' "$nativeModifiers"
+  '';
+
   passthru.category = "AI Coding Agents";
 
   meta = {
@@ -99,7 +154,7 @@ buildNpmPackage {
     license = lib.licenses.mit;
     sourceProvenance = with lib.sourceTypes; [ binaryBytecode ];
     maintainers = with lib.maintainers; [ aos ];
-    platforms = bun.meta.platforms;
+    platforms = builtins.attrNames platformsBySystem;
     mainProgram = "pi";
   };
 }
