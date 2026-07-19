@@ -11,11 +11,14 @@
   bubblewrap,
   libcap,
   versionCheckHook,
-  mkRustyV8Archive,
+  callPackage,
+  mkRustyV8Archive ? callPackage ../../lib/rusty-v8.nix { },
   versionData ? builtins.fromJSON (builtins.readFile ./hashes.json),
   version ? versionData.version,
   hash ? versionData.hash,
-  src ? null,
+  # Named srcOverride because a `src` argument would be autofilled by
+  # callPackage from the throwing `pkgs.src` alias.
+  srcOverride ? null,
   sourceRoot ? "source/codex-rs",
   cargoVendor ? {
     cargoHash = versionData.cargoHash;
@@ -35,8 +38,8 @@
 
 let
   actualSrc =
-    if src != null then
-      src
+    if srcOverride != null then
+      srcOverride
     else
       fetchFromGitHub {
         owner = "openai";
