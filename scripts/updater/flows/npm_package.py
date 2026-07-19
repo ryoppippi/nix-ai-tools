@@ -23,11 +23,16 @@ def update_npm_package(
     lockfile_env: dict[str, str] | None = None,
     strip_dev_dependencies: bool = False,
     require_lockfile: bool = True,
+    fetchzip: bool = False,
 ) -> None:
     """Update a package built from an npm registry tarball.
 
-    Bumps version/sourceHash in hashes.json, refreshes package-lock.json from
-    the tarball, and recalculates npmDepsHash.
+    Bumps version and source hash in hashes.json, refreshes package-lock.json
+    from the tarball, and recalculates npmDepsHash.
+
+    Set ``fetchzip=True`` for packages whose derivation fetches the tarball
+    with fetchzip instead of fetchurl: the source hash is then calculated over
+    the unpacked tarball and stored under "hash" instead of "sourceHash".
     """
     hashes_file = pkg_dir / "hashes.json"
     data = load_hashes(hashes_file)
@@ -46,7 +51,7 @@ def update_npm_package(
     )
 
     print("Calculating source hash...")
-    source_hash = calculate_url_hash(tarball_url)
+    source_hash = calculate_url_hash(tarball_url, unpack=fetchzip)
 
     if not extract_or_generate_lockfile(
         tarball_url,
@@ -60,9 +65,10 @@ def update_npm_package(
 
     # Dummy npmDepsHash: update_dependency_hash builds the package and
     # replaces it with the hash reported by the failed build.
+    source_hash_key = "hash" if fetchzip else "sourceHash"
     data = {
         "version": latest,
-        "sourceHash": source_hash,
+        source_hash_key: source_hash,
         "npmDepsHash": DUMMY_SHA256_HASH,
     }
     save_hashes(hashes_file, data)
