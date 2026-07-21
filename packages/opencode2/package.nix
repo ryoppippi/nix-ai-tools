@@ -7,6 +7,7 @@
   platformSource,
   versionCheckHook,
   versionCheckHomeHook,
+  flake,
 }:
 
 let
@@ -74,6 +75,7 @@ stdenv.mkDerivation {
     downloadPage = "https://www.npmjs.com/package/@opencode-ai/cli?activeTab=versions";
     license = lib.licenses.mit;
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
+    maintainers = with flake.lib.maintainers; [ iainlane ];
     mainProgram = "opencode2";
     platforms = source.platforms;
   };

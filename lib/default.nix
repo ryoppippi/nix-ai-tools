@@ -169,6 +169,11 @@ inputs.nixpkgs.lib.extend (
         githubId = 32300164;
         name = "Mix";
       };
+      iainlane = {
+        github = "iainlane";
+        githubId = 321014;
+        name = "Iain Lane";
+      };
     };
   }
 )
