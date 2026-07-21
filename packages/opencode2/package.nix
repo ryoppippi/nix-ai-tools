@@ -1,36 +1,32 @@
 {
   lib,
   stdenv,
-  fetchurl,
   makeWrapper,
   wrapBuddy,
   ripgrep,
+  platformSource,
   versionCheckHook,
   versionCheckHomeHook,
 }:
 
 let
-  versionData = builtins.fromJSON (builtins.readFile ./hashes.json);
-  inherit (versionData) version hashes;
-
-  platformMap = {
-    x86_64-linux = "linux-x64";
-    aarch64-linux = "linux-arm64";
-    x86_64-darwin = "darwin-x64";
-    aarch64-darwin = "darwin-arm64";
+  # OpenCode 2 ships as platform-specific Bun executables on npm's next channel
+  # (@opencode-ai/cli-<platform>).
+  source = platformSource {
+    hashesFile = ./hashes.json;
+    platforms = {
+      x86_64-linux = "linux-x64";
+      aarch64-linux = "linux-arm64";
+      aarch64-darwin = "darwin-arm64";
+    };
+    url =
+      { version, platform }:
+      "https://registry.npmjs.org/@opencode-ai/cli-${platform}/-/cli-${platform}-${version}.tgz";
   };
-
-  platform = stdenv.hostPlatform.system;
-  npmPlatform = platformMap.${platform} or (throw "Unsupported system: ${platform}");
 in
 stdenv.mkDerivation {
   pname = "opencode2";
-  inherit version;
-
-  src = fetchurl {
-    url = "https://registry.npmjs.org/@opencode-ai/cli-${npmPlatform}/-/cli-${npmPlatform}-${version}.tgz";
-    hash = hashes.${platform};
-  };
+  inherit (source) version src;
 
   sourceRoot = "package";
 
@@ -41,8 +37,11 @@ stdenv.mkDerivation {
   wrapBuddyExtraNeeded = lib.optionals stdenv.hostPlatform.isLinux [ "libstdc++.so.6" ];
 
   dontBuild = true;
+  # Bun-compiled executable; stripping corrupts the embedded payload.
   dontStrip = true;
 
+  # Install only the executable; the tarball also contains ~49 MiB of source
+  # maps that are not needed at runtime.
   installPhase = ''
     runHook preInstall
 
@@ -59,21 +58,6 @@ stdenv.mkDerivation {
     versionCheckHomeHook
   ];
   versionCheckProgramArg = "--version";
-  versionCheckKeepEnvironment = [
-    "HOME"
-    "XDG_CACHE_HOME"
-    "XDG_CONFIG_HOME"
-    "XDG_DATA_HOME"
-    "XDG_STATE_HOME"
-  ];
-  preInstallCheck = ''
-    export HOME="$NIX_BUILD_TOP/.version-check-home"
-    export XDG_CACHE_HOME="$HOME/.cache"
-    export XDG_CONFIG_HOME="$HOME/.config"
-    export XDG_DATA_HOME="$HOME/.local/share"
-    export XDG_STATE_HOME="$HOME/.local/state"
-    mkdir -p "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_STATE_HOME"
-  '';
 
   passthru.category = "AI Coding Agents";
 
@@ -91,11 +75,6 @@ stdenv.mkDerivation {
     license = lib.licenses.mit;
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
     mainProgram = "opencode2";
-    platforms = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "x86_64-darwin"
-      "aarch64-darwin"
-    ];
+    platforms = source.platforms;
   };
 }
