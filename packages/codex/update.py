@@ -34,12 +34,6 @@ RUSTY_V8_PLATFORMS = {
     "aarch64-darwin": "aarch64-apple-darwin",
 }
 
-# codex-realtime-webrtc only enables livekit/webrtc-sys on macOS, so we
-# only need to prefetch the darwin prebuilt archives.
-LIVEKIT_WEBRTC_PLATFORMS = {
-    "aarch64-darwin": "mac-arm64",
-}
-
 
 def fetch_version() -> str:
     """Fetch latest codex version from GitHub releases."""
@@ -78,42 +72,6 @@ def librusty_v8_pins(
     return {"version": v8_version, "hashes": {k: hashes[k] for k in RUSTY_V8_PLATFORMS}}
 
 
-def livekit_webrtc_pins(
-    codex_version: str, previous: dict[str, Any] | None
-) -> dict[str, Any]:
-    """Return the prebuilt livekit webrtc pin for the given codex version.
-
-    codex pins a fork of livekit/rust-sdks via a git revision; that crate's
-    ``webrtc-sys-build`` hard-codes the upstream release tag to download.
-    Re-uses existing hashes when the tag is unchanged to avoid re-downloading
-    two ~300MB archives on every bump.
-    """
-    rust_sdks_rev = fetch_version_from_text(
-        f"https://raw.githubusercontent.com/openai/codex/rust-v{codex_version}/codex-rs/Cargo.lock",
-        r'name = "webrtc-sys-build"\nversion = "[^"]+"\n'
-        r'source = "git\+https://github\.com/[^?]+\?rev=([0-9a-f]+)',
-    )
-    webrtc_tag = fetch_version_from_text(
-        f"https://raw.githubusercontent.com/juberti-oai/rust-sdks/{rust_sdks_rev}/webrtc-sys/build/src/lib.rs",
-        r'WEBRTC_TAG: &str = "([^"]+)"',
-    )
-    print(f"livekit webrtc tag: {webrtc_tag} (rust-sdks rev {rust_sdks_rev[:10]})")
-
-    if previous and previous.get("tag") == webrtc_tag:
-        print("livekit webrtc unchanged, reusing hashes")
-        return previous
-
-    hashes = {
-        nix_platform: calculate_url_hash(
-            "https://github.com/livekit/rust-sdks/releases/download/"
-            f"{webrtc_tag}/webrtc-{triple}-release.zip",
-            unpack=True,
-        )
-        for nix_platform, triple in LIVEKIT_WEBRTC_PLATFORMS.items()
-    }
-    return {"tag": webrtc_tag, "hashes": hashes}
-
-
 def main() -> None:
     """Update the codex package."""
     data = load_hashes(HASHES_FILE)
@@ -137,7 +95,6 @@ def main() -> None:
         "hash": source_hash,
         "cargoHash": DUMMY_SHA256_HASH,
         "librusty_v8": librusty_v8_pins(latest, data.get("librusty_v8")),
-        "livekit_webrtc": livekit_webrtc_pins(latest, data.get("livekit_webrtc")),
     }
     save_hashes(HASHES_FILE, data)
 

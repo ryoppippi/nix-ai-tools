@@ -2,7 +2,6 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchzip,
   installShellFiles,
   makeWrapper,
   rustPlatform,
@@ -48,25 +47,6 @@ let
         inherit hash;
       };
 
-  # codex-realtime-webrtc pulls in livekit's webrtc-sys on macOS, whose
-  # build.rs would download a ~300MB prebuilt libwebrtc archive at build
-  # time. Prefetch it as a fixed-output derivation and point the crate at
-  # it via LK_CUSTOM_WEBRTC so the build stays sandboxed.
-  livekitWebrtcTriple =
-    {
-      aarch64-darwin = "mac-arm64";
-    }
-    .${stdenv.hostPlatform.system} or null;
-  livekitWebrtc =
-    if livekitWebrtcTriple == null then
-      null
-    else
-      fetchzip {
-        name = "livekit-webrtc-${versionData.livekit_webrtc.tag}-${livekitWebrtcTriple}";
-        url = "https://github.com/livekit/rust-sdks/releases/download/${versionData.livekit_webrtc.tag}/webrtc-${livekitWebrtcTriple}-release.zip";
-        hash = versionData.livekit_webrtc.hashes.${stdenv.hostPlatform.system};
-        meta.sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
-      };
 in
 rustPlatform.buildRustPackage (
   {
@@ -103,9 +83,6 @@ rustPlatform.buildRustPackage (
       # limit on aarch64-darwin.
       CARGO_PROFILE_RELEASE_DEBUG = "false";
       CARGO_PROFILE_RELEASE_STRIP = "symbols";
-    }
-    // lib.optionalAttrs (livekitWebrtc != null) {
-      LK_CUSTOM_WEBRTC = livekitWebrtc;
     };
 
     inherit preBuild;
