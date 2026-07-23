@@ -7,13 +7,13 @@
 
 buildGoModule rec {
   pname = "vix";
-  version = "0.5.5";
+  version = "0.5.6";
 
   src = fetchFromGitHub {
     owner = "get-vix";
     repo = "vix";
     tag = "v${version}";
-    hash = "sha256-3GyFew6FYAbcvnOF86X1Aj4Evv3oWbDKPM05ZH70prs=";
+    hash = "sha256-WpfuIdk8wv+zohGxMsu8x324Awmwz1+b3oSUISXw54A=";
   };
 
   # source already has vendor folder
